@@ -23,7 +23,7 @@ const AlAuthPool = () => {
                 (e) => e.poolId == values.poolId
             );
             window.localStorage.setItem("poolId", values.poolId);
-            window.localStorage.setItem("poolName", pool.name);
+            window.localStorage.setItem("poolName", pool?.name ?? "");
 
             const callbackUrl = (router.query["callbackUrl"] as string) ?? "";
             const baseUrl = window.location.origin;
@@ -45,9 +45,9 @@ const AlAuthPool = () => {
                 (e) => e.poolId == values.poolId
             );
             confirm({
-                title: `${pool.name}`,
+                title: `${pool?.name}`,
                 icon: <ExclamationCircleOutlined />,
-                content: `Estás ingresando a la sede: ${pool.name}`,
+                content: `Estás ingresando a la sede: ${pool?.name}`,
                 okText: "Ingresar",
                 onOk() {
                     onFinish(values);
