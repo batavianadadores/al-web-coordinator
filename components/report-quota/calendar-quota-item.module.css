@@ -1,0 +1,49 @@
+.item {
+    width: 10rem;
+    height: 4rem;
+    background: #ffffff;
+    background-color: #ffffff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-style: solid;
+    border-color: #eeeeee;
+    border-width: 0.1rem;
+    font-size: 1.2rem;
+}
+
+.item__full {
+    background: #f5222d33;
+    background-color: #f5222d33;
+}
+.item__full:hover {
+    background: #f5222d55;
+    background-color: #f5222d55;
+}
+
+.item__almost-full {
+    background: #fadb1433;
+    background-color: #fadb1433;
+}
+.item__almost-full:hover {
+    background: #fadb1455;
+    background-color: #fadb1455;
+}
+
+.item__available {
+    background: #52c41a33;
+    background-color: #52c41a33;
+}
+.item__available:hover {
+    background: #52c41a55;
+    background-color: #52c41a55;
+}
+
+.item__selected {
+    background: #1890ff33;
+    background-color: #1890ff33;
+}
+.item__selected:hover {
+    background: #1890ff55;
+    background-color: #1890ff55;
+}

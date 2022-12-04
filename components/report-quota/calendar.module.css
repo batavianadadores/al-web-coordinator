@@ -1,0 +1,8 @@
+ul.nav {
+    padding-left: 0px;
+    text-align: center;
+    white-space: nowrap;
+}
+ul.nav > li {
+    display: inline-block;
+}

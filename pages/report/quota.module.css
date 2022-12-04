@@ -1,0 +1,12 @@
+.site-layout-background {
+    background: #fff;
+}
+[data-theme="dark"] .site-layout-background {
+    background: #141414;
+}
+
+.page-header {
+    background-color: #ffffff;
+    border: 1px solid rgb(235, 237, 240);
+    margin: 1rem 0rem;
+}

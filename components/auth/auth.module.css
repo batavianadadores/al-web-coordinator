@@ -1,0 +1,12 @@
+.authenticator-style {
+    height: 100vh;
+    --amplify-colors-brand-primary-10: #2EC4F5;
+    --amplify-colors-brand-primary-20: #2EC4F5f5;
+    --amplify-colors-brand-primary-40: #2EC4F5d9;
+    --amplify-colors-brand-primary-60: #2EC4F5a3;
+    --amplify-colors-brand-primary-80: #2EC4F56c;
+    --amplify-colors-brand-primary-90: #2EC4F536;
+    --amplify-colors-brand-primary-100: #2EC4F51a;
+    --amplify-components-button-primary-hover-background-color: #2EC4F5d9;
+    --amplify-components-button-primary-background-color: #2EC4F5;
+}
