@@ -209,9 +209,8 @@ const DataProvider = {
     ): Promise<APINewScheduleResponse[]> {
         try {
             let result = (await ppfetch.get(
-                "/schedule",
+                "/schedule/availability",
                 {
-                    fullSchedule: "true",
                     poolId: poolId.toString(),
                     courseId: courseId.toString(),
                     from,
@@ -226,18 +225,22 @@ const DataProvider = {
         }
     },
 
-    async listCourseHours(poolId: number, courseId: number): Promise<string[]> {
+    async listCourseHours(
+        token: string,
+        poolId: number,
+        courseId: number
+    ): Promise<string[]> {
         try {
-            let result = (await ppfetch.get("/schedule", {
-                poolId: poolId.toString(),
-                courseId: courseId.toString(),
-            })) as APIPaginationResponse<APIScheduleResponse>;
+            let result = (await ppfetch.get(
+                "/schedule/availability/hours",
+                {
+                    poolId: poolId.toString(),
+                    courseId: courseId.toString(),
+                },
+                token
+            )) as APIPaginationResponse<string>;
 
-            let hours = result.items.map((e) => `${e.from}:00`);
-            let uniqueHours = Array.from(new Set(hours));
-            uniqueHours = uniqueHours.sort();
-
-            return uniqueHours;
+            return result.items;
         } catch (error) {
             throw error;
         }
@@ -252,7 +255,7 @@ const DataProvider = {
     ): Promise<APIScheduleQuotaResponse> {
         try {
             let result = (await ppfetch.get(
-                "/schedule/quota",
+                "/schedule/availability/quota",
                 {
                     poolId: poolId.toString(),
                     courseId: courseId.toString(),
@@ -275,7 +278,7 @@ const DataProvider = {
     ): Promise<APIQuotaStudentScheduleItemResponse[]> {
         try {
             let result = (await ppfetch.get(
-                "/schedule/quota/studentSchedule",
+                "/schedule/availability/studentScheduleQuota",
                 {
                     poolId: poolId.toString(),
                     courseId: courseId.toString(),
