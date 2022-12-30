@@ -59,7 +59,9 @@ const AlReportQuotaCalendar: React.FC<IAlReportQuotaCalendar> = (props) => {
 
     const getCourseHours = async () => {
         try {
+            const token = await getIdTokenCallback();
             const result = await DataProvider.listCourseHours(
+                token,
                 poolId!,
                 courseId!
             );
