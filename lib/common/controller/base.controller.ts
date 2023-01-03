@@ -1,23 +1,13 @@
-import APIError from "@dataprovider/api-error";
-import { CourseDP } from "@lib/course/course.dp";
-import { CourseResponse } from "@lib/course/course.response";
-import { CourseModel } from "@lib/course/course.model";
-import { PoolDataProvider } from "@lib/pool/dp/pool.dp";
-import { APIPoolResponse } from "@lib/pool/entities/pool.entity";
-import { PoolModel } from "@lib/pool/model/pool.model";
-import { ProductsDataProvider } from "@lib/products/dp/products.dp";
-import {
-    APIProductListParameters,
-    APIProductResponse,
-} from "@lib/products/entities/product.entity";
-import { ProductModel } from "@lib/products/model/product.model";
-import { ErrorModel } from "../model/error.model";
 import { OptionModel } from "../model/option.model";
+import { PoolModel } from "@lib/pool/model/pool.model";
+import { CourseModel } from "@lib/course/course.model";
+import { CourseResponse } from "@lib/course/course.response";
+import { APIPoolResponse } from "@lib/pool/entities/pool.entity";
 import { CourseController } from "@lib/course/course.controller";
 
 export class BaseController {
     courseController = new CourseController(
-        process.env.NEXT_PUBLIC_API_URL_BASE
+        process.env.NEXT_PUBLIC_API_URL_BASE ?? ""
     );
 
     listCourseStatuses(): OptionModel[] {
@@ -168,78 +158,78 @@ export class BaseController {
         ];
     }
 
-    async listCourses(token: string): Promise<CourseModel[]> {
-        try {
-            const result = await this.courseController.list(token);
-            return result;
-        } catch (error) {
-            if (error instanceof APIError) {
-                throw new ErrorModel(
-                    error.data.userMessage,
-                    error.data.statusCode
-                );
-            } else {
-                console.error(error);
-                throw new ErrorModel(
-                    "No pudimos completar tu solicitud intenta nuevamente"
-                );
-            }
-        }
-    }
+    // async listCourses(token: string): Promise<CourseModel[]> {
+    //     try {
+    //         const result = await this.courseController.list(token);
+    //         return result;
+    //     } catch (error) {
+    //         if (error instanceof APIError) {
+    //             throw new ErrorModel(
+    //                 error.data.userMessage,
+    //                 error.data.statusCode
+    //             );
+    //         } else {
+    //             console.error(error);
+    //             throw new ErrorModel(
+    //                 "No pudimos completar tu solicitud intenta nuevamente"
+    //             );
+    //         }
+    //     }
+    // }
 
-    async listPools(): Promise<PoolModel[]> {
-        try {
-            const result = await PoolDataProvider.listPools();
-            return result.items.map((e) =>
-                this.transformAPIPoolResponseToPooModel(e)
-            );
-        } catch (error) {
-            if (error instanceof APIError) {
-                throw new ErrorModel(
-                    error.data.userMessage,
-                    error.data.statusCode
-                );
-            } else {
-                console.error(error);
-                throw new ErrorModel(
-                    "No pudimos completar tu solicitud intenta nuevamente"
-                );
-            }
-        }
-    }
+    // async listPools(): Promise<PoolModel[]> {
+    //     try {
+    //         const result = await PoolDataProvider.listPools();
+    //         return result.items.map((e) =>
+    //             this.transformAPIPoolResponseToPooModel(e)
+    //         );
+    //     } catch (error) {
+    //         if (error instanceof APIError) {
+    //             throw new ErrorModel(
+    //                 error.data.userMessage,
+    //                 error.data.statusCode
+    //             );
+    //         } else {
+    //             console.error(error);
+    //             throw new ErrorModel(
+    //                 "No pudimos completar tu solicitud intenta nuevamente"
+    //             );
+    //         }
+    //     }
+    // }
 
-    async listProducts(
-        parameters: APIProductListParameters,
-        token: string
-    ): Promise<{ totalItems: number; items: ProductModel[] }> {
-        try {
-            const result = await ProductsDataProvider.listProducts(
-                parameters,
-                token
-            );
+    // async listProducts(
+    //     parameters: APIProductListParameters,
+    //     token: string
+    // ): Promise<{ totalItems: number; items: ProductModel[] }> {
+    //     try {
+    //         const result = await ProductsDataProvider.listProducts(
+    //             parameters,
+    //             token
+    //         );
 
-            const items = result.items.map((e) =>
-                this.transformAPIProductResponseToProductModel(e)
-            );
-            const totalItems = result.totalItems;
-            return {
-                totalItems,
-                items,
-            };
-        } catch (error) {
-            if (error instanceof APIError) {
-                throw new ErrorModel(
-                    error.data.userMessage,
-                    error.data.statusCode
-                );
-            } else {
-                console.error(error);
-                throw new ErrorModel(
-                    "No pudimos completar tu solicitud intenta nuevamente"
-                );
-            }
-        }
-    }
+    //         const items = result.items.map((e) =>
+    //             this.transformAPIProductResponseToProductModel(e)
+    //         );
+    //         const totalItems = result.totalItems;
+    //         return {
+    //             totalItems,
+    //             items,
+    //         };
+    //     } catch (error) {
+    //         if (error instanceof APIError) {
+    //             throw new ErrorModel(
+    //                 error.data.userMessage,
+    //                 error.data.statusCode
+    //             );
+    //         } else {
+    //             console.error(error);
+    //             throw new ErrorModel(
+    //                 "No pudimos completar tu solicitud intenta nuevamente"
+    //             );
+    //         }
+    //     }
+    // }
 
     protected transformAPICourseResponseToCourseModel(
         response: CourseResponse
@@ -254,12 +244,12 @@ export class BaseController {
         return Object.assign(new PoolModel(), response);
     }
 
-    protected transformAPIProductResponseToProductModel(
-        response: APIProductResponse
-    ): ProductModel {
-        const stateOptions = this.listProductStates();
-        return Object.assign(new ProductModel(), response, {
-            stateOption: stateOptions.find((e) => e.id === response.state),
-        });
-    }
+    // protected transformAPIProductResponseToProductModel(
+    //     response: APIProductResponse
+    // ): ProductModel {
+    //     const stateOptions = this.listProductStates();
+    //     return Object.assign(new ProductModel(), response, {
+    //         stateOption: stateOptions.find((e) => e.id === response.state),
+    //     });
+    // }
 }

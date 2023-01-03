@@ -10,7 +10,7 @@ export class CourseDP extends BaseDataProvider {
     }
 
     list(token: string, basic?: boolean, web?: boolean) {
-        const params = {};
+        const params: { basic?: string; web?: string } = {};
         if (basic !== undefined) {
             params["basic"] = basic ? "true" : "false";
         }

@@ -1,12 +1,12 @@
-import styles from "./auth.module.css";
 import React from "react";
-import { AuthConfig } from "./utils";
-import ALLayout from "@components/layout/layout";
 import Router from "next/router";
-import { Typography, Image } from "antd";
-//import "antd/dist/antd.css";
-import { Authenticator, Flex, useAuthenticator } from "@aws-amplify/ui-react";
 import { DateTime } from "luxon";
+import { Typography, Image } from "antd";
+import { Authenticator, useAuthenticator } from "@aws-amplify/ui-react";
+
+import { AuthConfig } from "./utils";
+import styles from "./auth.module.css";
+import ALLayout from "@components/layout/layout";
 
 import { I18n } from "aws-amplify";
 import { translations } from "@aws-amplify/ui-react";
@@ -47,6 +47,7 @@ const components = {
                     preview={false}
                     width={200}
                     height={85.2}
+                    alt={"logo"}
                 ></Image>
             </div>
         );

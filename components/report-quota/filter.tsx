@@ -1,4 +1,3 @@
-import moment, { Moment } from "moment";
 import type { Dayjs } from "dayjs";
 import type { DatePickerProps } from "antd";
 import React, { useEffect, useState } from "react";
