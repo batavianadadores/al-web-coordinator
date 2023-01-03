@@ -1,149 +1,67 @@
 import APIError from "./api-error";
 
-class ALFetch {
-    urlBase?: string;
+export default class BNFetch {
+    urlBase: string;
 
-    constructor(urlBase?: string) {
+    constructor(urlBase: string) {
         this.urlBase = urlBase;
     }
 
-    async post(
-        url: string,
+    post<T>(
+        path: string,
         body: object,
         params?: Record<string, string>,
         token?: string
-    ): Promise<any> {
-        try {
-            if (!navigator.onLine) {
-                throw new APIError({
-                    errorCode: 0,
-                    userMessage: "Revisa tu conexión a internet.",
-                    developerMessage: "",
-                    moreInfo: "",
-                });
-            }
-
-            let urlFetch = new URL(this.urlBase + url);
-            if (params) {
-                urlFetch.search = new URLSearchParams(params).toString();
-            }
-
-            const headers: HeadersInit = {
-                "Content-Type": "application/json",
-            };
-            const init: RequestInit = {
-                method: "POST",
-                mode: "cors",
-                cache: "no-cache",
-                credentials: "same-origin",
-                headers,
-                redirect: "follow",
-                referrerPolicy: "no-referrer",
-                body: JSON.stringify(body),
-            };
-            if (token) {
-                headers["x-albrd-authorization"] = token;
-            }
-            const response = await fetch(urlFetch.toString(), init);
-
-            if (!response.ok) {
-                const data = await response.json();
-                throw new APIError(data);
-            }
-
-            return response.json();
-        } catch (error) {
-            throw error;
-        }
+    ): Promise<T> {
+        return this.customFetch("POST", path, body, params, token, undefined);
     }
 
-    async patch(
-        url: string,
+    patch<T>(
+        path: string,
         body: object,
         params?: Record<string, string>,
         token?: string
-    ): Promise<any> {
-        try {
-            if (!navigator.onLine) {
-                throw new APIError({
-                    errorCode: 0,
-                    userMessage: "Revisa tu conexión a internet.",
-                    developerMessage: "",
-                    moreInfo: "",
-                });
-            }
-
-            let urlFetch = new URL(this.urlBase + url);
-            if (params) {
-                urlFetch.search = new URLSearchParams(params).toString();
-            }
-
-            const headers: HeadersInit = {
-                "Content-Type": "application/json",
-            };
-            const init: RequestInit = {
-                method: "PATCH",
-                mode: "cors",
-                cache: "no-cache",
-                credentials: "same-origin",
-                headers,
-                redirect: "follow",
-                referrerPolicy: "no-referrer",
-                body: JSON.stringify(body),
-            };
-            if (token) {
-                headers["x-albrd-authorization"] = token;
-            }
-            const response = await fetch(urlFetch.toString(), init);
-
-            if (!response.ok) {
-                const data = await response.json();
-                throw new APIError(data);
-            }
-
-            return response.json();
-        } catch (error) {
-            throw error;
-        }
+    ): Promise<T> {
+        return this.customFetch("PATCH", path, body, params, token, undefined);
     }
 
-    async form(url: string, body: FormData): Promise<any> {
-        try {
-            if (!navigator.onLine) {
-                throw new APIError({
-                    errorCode: 0,
-                    userMessage: "Revisa tu conexión a internet.",
-                    developerMessage: "",
-                    moreInfo: "",
-                });
-            }
-            const response = await fetch(this.urlBase + url, {
-                method: "POST",
-                mode: "cors",
-                cache: "no-cache",
-                credentials: "same-origin",
-                redirect: "follow",
-                referrerPolicy: "no-referrer",
-                body: body,
-            });
-
-            if (!response.ok) {
-                const data = await response.json();
-                throw new APIError(data);
-            }
-
-            return response.json();
-        } catch (error) {
-            throw error;
-        }
+    form<T>(path: string, body: FormData): Promise<T> {
+        return this.customFetch(
+            "POST",
+            path,
+            body,
+            undefined,
+            undefined,
+            undefined
+        );
     }
 
-    async get(
-        url: string,
+    get<T>(
+        path: string,
         params?: Record<string, string>,
         token?: string,
         signal?: AbortSignal
-    ): Promise<any> {
+    ): Promise<T> {
+        return this.customFetch("GET", path, undefined, params, token, signal);
+    }
+
+    delete<T>(
+        path: string,
+        params?: { [key: string]: string },
+        token?: string,
+        body?: object
+    ): Promise<T> {
+        return this.customFetch("DELETE", path, body, params, token, undefined);
+    }
+
+    async customFetch<T>(
+        method: "POST" | "GET" | "PATCH" | "DELETE",
+        path: string,
+        body?: object,
+        params?: Record<string, string>,
+        token?: string,
+        signal?: AbortSignal
+    ): Promise<T> {
         try {
             if (!navigator.onLine) {
                 throw new APIError({
@@ -154,32 +72,39 @@ class ALFetch {
                 });
             }
 
-            let urlFetch = new URL(this.urlBase + url);
+            let urlFetch = new URL(this.urlBase + path);
             if (params) {
                 urlFetch.search = new URLSearchParams(params).toString();
             }
-            const headers: HeadersInit = {
-                "Content-Type": "application/json",
-                "Accept-Encoding": "gzip",
-            };
+
             const init: RequestInit = {
-                method: "GET",
+                method: method,
                 mode: "cors",
                 cache: "no-cache",
                 credentials: "same-origin",
-                headers,
+                headers: {
+                    "Accept-Encoding": "gzip",
+                },
                 redirect: "follow",
                 referrerPolicy: "no-referrer",
             };
+            let headers: Record<string, string> = {};
 
+            if (body) {
+                init.body = JSON.stringify(body);
+                headers["Content-Type"] = "application/json";
+            }
             if (token) {
                 headers["x-albrd-authorization"] = token;
             }
-
             if (signal) {
                 init.signal = signal;
             }
-
+            if (body instanceof FormData) {
+                init.headers = undefined;
+            } else {
+                init.headers = headers;
+            }
             const response = await fetch(urlFetch.toString(), init);
 
             if (!response.ok) {
@@ -193,5 +118,3 @@ class ALFetch {
         }
     }
 }
-
-export default ALFetch;

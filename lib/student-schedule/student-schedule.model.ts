@@ -24,8 +24,8 @@ export class StudentScheduleModel extends BaseModel {
     }
 
     private _init: string;
-    private _initDateTime: DateTime;
-    private _initHourString: string;
+    private _initDateTime?: DateTime;
+    private _initHourString?: string;
     private _initWeekDay: number;
 
     set init(value) {
