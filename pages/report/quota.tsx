@@ -1,114 +1,71 @@
-import styles from "./quota.module.css";
 import React, { useState } from "react";
+import { Layout, Typography } from "antd";
+
+import styles from "./quota.module.css";
+import { PoolModel } from "@lib/pool/model/pool.model";
+import { CourseModel } from "@lib/course/course.model";
 import { ComponentWithAuth } from "@components/auth/utils";
-import AlReportQuotaCalendar from "@components/report-quota/calendar";
-import AlReportQuotaStudentSchedule from "@components/report-quota/student-schedule";
-import { CalendarQuotaItem } from "@components/report-quota/calendar-quota-item";
-import useGeneralData from "@hooks/useGeneralData";
-import { Layout, Form, Select, Divider } from "antd";
+import AlScheduleCapacityTable from "@components/report-quota/table";
+import AlScheduleCapacityFilter from "@components/report-quota/filter";
+
 const { Content } = Layout;
-const { Option } = Select;
+const { Title } = Typography;
 
-type AlReportQuotaProps = {};
+type AlScheduleQuotaProps = {};
 
-type FormValues = {
-    poolId?: number;
-    courseId?: number;
-};
+const AlScheduleQuota: ComponentWithAuth<AlScheduleQuotaProps> = (props) => {
+    const [filter, setFilter] = useState<{
+        pool: PoolModel;
+        from: string;
+        to: string;
+    }>();
 
-const AlReportQuota: ComponentWithAuth<AlReportQuotaProps> = (props) => {
-    const generalData = useGeneralData();
-    const [form] = Form.useForm<FormValues>();
-    const [poolId, setPoolId] = useState<number>();
-    const [courseId, setCourseId] = useState<number>();
+    const [coursesFilter, setCoursesFilter] = useState<CourseModel[]>([]);
 
-    const handleValuesChange = (
-        changedValues: FormValues,
-        values: FormValues
+    const handleOnFilterChange = (
+        pool: PoolModel,
+        from: string,
+        to: string
     ) => {
-        if (changedValues.courseId) {
-            setCourseId(changedValues.courseId);
-        }
-        if (changedValues.poolId) {
-            setPoolId(changedValues.poolId);
-        }
+        setFilter({ pool, from, to });
     };
 
-    const [pickedDays, setPickedDays] = useState<CalendarQuotaItem[]>([]);
-    const shouldChangeState = (
-        e: CalendarQuotaItem,
-        newState: "default" | "selected"
-    ): boolean => {
-        setPickedDays([e]);
-        return false;
+    const handleOnCoursesFilterChange = (courses: CourseModel[]) => {
+        setCoursesFilter(courses);
     };
 
     return (
         <Content style={{ margin: "0 16px" }}>
-            <div
-                className={styles["site-layout-background"]}
-                style={{ padding: 24, minHeight: 360 }}
-            >
-                <Form
-                    layout="inline"
-                    form={form}
-                    onValuesChange={handleValuesChange}
-                    scrollToFirstError={true}
-                >
-                    <Form.Item
-                        name="poolId"
-                        label="Piscina"
-                        rules={[{ required: true }]}
-                    >
-                        <Select style={{ width: "20rem" }}>
-                            {generalData.pools?.map((e) => (
-                                <Option value={e.poolId} key={e.poolId}>
-                                    {e.name}
-                                </Option>
-                            ))}
-                        </Select>
-                    </Form.Item>
-                    <Form.Item
-                        name="courseId"
-                        label="Curso"
-                        rules={[{ required: true }]}
-                    >
-                        <Select style={{ width: "20rem" }}>
-                            {generalData.courses?.map((e) => (
-                                <Option value={e.courseId} key={e.courseId}>
-                                    {e.name}
-                                </Option>
-                            ))}
-                        </Select>
-                    </Form.Item>
-                </Form>
-                <Divider />
-                <AlReportQuotaCalendar
-                    poolId={poolId}
-                    courseId={courseId}
-                    shouldChangeState={shouldChangeState}
-                    pickedDays={pickedDays}
-                    setPickedDays={setPickedDays}
-                />
-                <Divider />
-                <AlReportQuotaStudentSchedule
-                    poolId={poolId}
-                    courseId={courseId}
-                    datetime={
-                        pickedDays.length > 0
-                            ? pickedDays[0].datetime
-                            : undefined
-                    }
-                />
+            <div className={styles["page-header"]}>
+                <Title level={3}>Capacidad</Title>
+            </div>
+            <div className={styles["site-layout-background"]}>
+                <Title level={5} style={{ margin: "0" }}>
+                    Filtros
+                </Title>
+                <div className={styles["card-body-container"]}>
+                    <AlScheduleCapacityFilter
+                        onChange={handleOnFilterChange}
+                        onCoursesChange={handleOnCoursesFilterChange}
+                    />
+                </div>
+            </div>
+            <div className={styles["site-layout-background"]}>
+                <div className={styles["card-body-container"]}>
+                    <AlScheduleCapacityTable
+                        filter={filter}
+                        coursesFilter={coursesFilter}
+                    />
+                </div>
             </div>
         </Content>
     );
 };
 
-AlReportQuota.auth = {
-    role: ["seller", "coordinator", "admin"],
+AlScheduleQuota.auth = {
+    role: ["admin", "seller", "coordinator"],
     unauthorized: "/auth/unauthorized",
     removeLayout: false,
 };
 
-export default AlReportQuota;
+export default AlScheduleQuota;
