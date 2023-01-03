@@ -1,9 +1,9 @@
 import "../styles/styles.css";
 import { ConfigProvider } from "antd";
 import esEs from "antd/lib/locale/es_ES";
-import moment from "moment";
-import "moment/locale/es";
-moment.locale("es");
+import dayjs from "dayjs";
+import "dayjs/locale/es-mx";
+dayjs.locale("es-mx");
 
 import { Settings } from "luxon";
 import { NextComponentType, NextPageContext } from "next";
