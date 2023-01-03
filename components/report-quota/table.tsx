@@ -296,7 +296,7 @@ const AlScheduleCapacityTable: React.FC<AlScheduleCapacityTableProps> = ({
         setLegend(legend);
 
         const uniqueHours = Array.from(
-            new Set(studentSchedules?.map((e) => e.initHourString))
+            new Set(studentSchedules?.map((e) => e.initHourString ?? ""))
         )
             .map((e) => {
                 const value = DateTime.fromISO(`2000-01-01T${e}`);

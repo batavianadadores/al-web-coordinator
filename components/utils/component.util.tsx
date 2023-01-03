@@ -2,7 +2,7 @@ import React from "react";
 import { message } from "antd";
 
 import { ErrorModel } from "lib/common/error.model";
-import { Arguments, Return } from "lib/utils/function.util";
+import { Arguments, Return } from "@lib/utils/function.util";
 
 export async function executeDataAsync<F extends Function>(
     fn: F,
@@ -13,14 +13,14 @@ export async function executeDataAsync<F extends Function>(
     try {
         return await fn(...args);
     } catch (error) {
-        if (error.errorFields) {
-            return undefined;
+        if ((error as any).errorFields) {
+            return undefined as Awaited<Return<F>>;
         } else if (error instanceof ErrorModel) {
             message.error(error.message);
         } else {
             message.error("No pudimos completar tu solicitud");
         }
-        return undefined;
+        return undefined as Awaited<Return<F>>;
     } finally {
         setIsLoading?.(false);
     }
