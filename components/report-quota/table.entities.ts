@@ -1,7 +1,7 @@
 import { DateTime } from "luxon";
 
+import { LevelModel } from "@lib/student/level.model";
 import { StudentScheduleModel } from "@lib/student-schedule/student-schedule.model";
-import { CourseModel } from "@lib/course/course.model";
 
 export type HourTableValue = {
     id: number;
@@ -18,7 +18,7 @@ export type DayTableValue = {
 };
 
 export type CellValueItem = {
-    course: CourseModel;
+    level: LevelModel;
     ss: StudentScheduleModel[];
 };
 

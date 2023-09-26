@@ -2,8 +2,8 @@ import React, { useState } from "react";
 import { Layout, Typography } from "antd";
 
 import styles from "./quota.module.css";
+import { LevelModel } from "@lib/student/level.model";
 import { PoolModel } from "@lib/pool/model/pool.model";
-import { CourseModel } from "@lib/course/course.model";
 import { ComponentWithAuth } from "@components/auth/utils";
 import AlScheduleCapacityTable from "@components/report-quota/table";
 import AlScheduleCapacityFilter from "@components/report-quota/filter";
@@ -20,7 +20,7 @@ const AlScheduleQuota: ComponentWithAuth<AlScheduleQuotaProps> = (props) => {
         to: string;
     }>();
 
-    const [coursesFilter, setCoursesFilter] = useState<CourseModel[]>([]);
+    const [levelsFilter, setLevelsFilter] = useState<LevelModel[]>([]);
 
     const handleOnFilterChange = (
         pool: PoolModel,
@@ -30,8 +30,8 @@ const AlScheduleQuota: ComponentWithAuth<AlScheduleQuotaProps> = (props) => {
         setFilter({ pool, from, to });
     };
 
-    const handleOnCoursesFilterChange = (courses: CourseModel[]) => {
-        setCoursesFilter(courses);
+    const handleOnLevelsFilterChange = (levels: LevelModel[]) => {
+        setLevelsFilter(levels);
     };
 
     return (
@@ -46,7 +46,7 @@ const AlScheduleQuota: ComponentWithAuth<AlScheduleQuotaProps> = (props) => {
                 <div className={styles["card-body-container"]}>
                     <AlScheduleCapacityFilter
                         onChange={handleOnFilterChange}
-                        onCoursesChange={handleOnCoursesFilterChange}
+                        onLevelsChange={handleOnLevelsFilterChange}
                     />
                 </div>
             </div>
@@ -54,7 +54,7 @@ const AlScheduleQuota: ComponentWithAuth<AlScheduleQuotaProps> = (props) => {
                 <div className={styles["card-body-container"]}>
                     <AlScheduleCapacityTable
                         filter={filter}
-                        coursesFilter={coursesFilter}
+                        levelsFilter={levelsFilter}
                     />
                 </div>
             </div>
