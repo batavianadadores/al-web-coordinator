@@ -3,8 +3,9 @@ import type { DatePickerProps } from "antd";
 import React, { useEffect, useState } from "react";
 import { Button, DatePicker, Select, Typography } from "antd";
 
+import { LevelModel } from "@lib/student/level.model";
+import { LevelFields, Level } from "@lib/student/student";
 import { PoolModel } from "@lib/pool/model/pool.model";
-import { CourseModel } from "@lib/course/course.model";
 import useCognitoSession from "@hooks/useCognitoSession";
 import { PoolController } from "@lib/pool/pool.controller";
 import { CourseController } from "@lib/course/course.controller";
@@ -14,12 +15,12 @@ const { Text } = Typography;
 
 type AlScheduleCapacityFilterProps = {
     onChange: (pool: PoolModel, from: string, to: string) => void;
-    onCoursesChange: (courses: CourseModel[]) => void;
+    onLevelsChange: (levels: LevelModel[]) => void;
 };
 
 const AlScheduleCapacityFilter: React.FC<AlScheduleCapacityFilterProps> = ({
     onChange,
-    onCoursesChange,
+    onLevelsChange,
 }) => {
     const { getIdTokenCallback } = useCognitoSession();
 
@@ -33,9 +34,9 @@ const AlScheduleCapacityFilter: React.FC<AlScheduleCapacityFilterProps> = ({
 
     const [isLoading, setIsLoading] = useState(false);
     const [pools, setPools] = useState<PoolModel[]>([]);
-    const [courses, setCourses] = useState<CourseModel[]>([]);
+    const [levels, setLevels] = useState<LevelModel[]>([]);
     const [selectedPool, setSelectedPool] = useState<PoolModel>();
-    const [selectedCourses, setSelectedCourses] = useState<CourseModel[]>();
+    const [selectedLevels, setSelectedLevels] = useState<LevelModel[]>();
     const [selectedEndOfWeek, setSelectedEndOfWeek] = useState<Dayjs | null>();
 
     /// Listing
@@ -45,18 +46,16 @@ const AlScheduleCapacityFilter: React.FC<AlScheduleCapacityFilterProps> = ({
 
     const listData = async () => {
         executeDataAsync(async () => {
-            const token = await getIdTokenCallback();
-
             const poolsPromise = poolController.list();
-            const coursePromise = courseController.list(token);
+            const levels = LevelFields.all.map((field) => ({
+                level: (LevelFields as any)[field]["value"],
+                description: (LevelFields as any)[field]["description"],
+            }));
 
-            const [pools, courses] = await Promise.all([
-                poolsPromise,
-                coursePromise,
-            ]);
+            const [pools] = await Promise.all([poolsPromise]);
 
             setPools(pools);
-            setCourses(courses);
+            setLevels(levels);
         }, setIsLoading);
     };
 
@@ -67,14 +66,14 @@ const AlScheduleCapacityFilter: React.FC<AlScheduleCapacityFilterProps> = ({
         notifyChange(pool, selectedEndOfWeek as Dayjs);
     };
 
-    const handleOnCourseChange = (courseIds: number[]) => {
-        const selected = courses.filter((e) => courseIds.includes(e.courseId));
-        setSelectedCourses(selected);
+    const handleOnLevelsChange = (changedLevels: Level[]) => {
+        const selected = levels.filter((e) => changedLevels.includes(e.level));
+        setSelectedLevels(selected);
     };
 
     const handleOnFilterClic = () => {
-        if (selectedCourses && selectedCourses.length > 0) {
-            onCoursesChange(selectedCourses);
+        if (selectedLevels && selectedLevels.length > 0) {
+            onLevelsChange(selectedLevels);
         }
     };
 
@@ -171,20 +170,20 @@ const AlScheduleCapacityFilter: React.FC<AlScheduleCapacityFilterProps> = ({
                         padding: "0px 20px 0px 0px",
                     }}
                 >
-                    <Text>Cursos: </Text>
+                    <Text>Niveles: </Text>
                     <Select
                         mode="multiple"
                         allowClear
                         placeholder="Selecciona los cursos"
-                        value={selectedCourses?.map((e) => e.courseId)}
-                        onChange={handleOnCourseChange}
+                        value={selectedLevels?.map((e) => e.level)}
+                        onChange={handleOnLevelsChange}
                         loading={isLoading}
                         style={{
                             width: "100%",
                         }}
-                        options={courses.map((e) => ({
-                            value: e.courseId,
-                            label: e.name,
+                        options={levels.map((e) => ({
+                            value: e.level,
+                            label: e.description,
                         }))}
                     />
                 </div>
