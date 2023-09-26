@@ -5,10 +5,10 @@ import React, { useState, useEffect } from "react";
 import { ReloadOutlined } from "@ant-design/icons";
 
 import style from "./table.module.css";
+import { LevelFields } from "@lib/student/student";
+import { LevelModel } from "@lib/student/level.model";
 import { PoolModel } from "@lib/pool/model/pool.model";
-import { CourseModel } from "@lib/course/course.model";
 import useCognitoSession from "@hooks/useCognitoSession";
-import { CourseController } from "@lib/course/course.controller";
 import { executeDataAsync } from "@components/utils/component.util";
 import { StudentScheduleModel } from "@lib/student-schedule/student-schedule.model";
 import { StudentScheduleController } from "@lib/student-schedule/student-schedule.controller";
@@ -29,19 +29,16 @@ type AlScheduleCapacityTableProps = {
         from: string;
         to: string;
     };
-    coursesFilter: CourseModel[];
+    levelsFilter: LevelModel[];
 };
 
 const AlScheduleCapacityTable: React.FC<AlScheduleCapacityTableProps> = ({
     filter,
-    coursesFilter,
+    levelsFilter,
 }) => {
     const { getIdTokenCallback } = useCognitoSession();
 
     const ssController = new StudentScheduleController(
-        process.env.NEXT_PUBLIC_API_URL_BASE ?? ""
-    );
-    const courseController = new CourseController(
         process.env.NEXT_PUBLIC_API_URL_BASE ?? ""
     );
 
@@ -50,14 +47,16 @@ const AlScheduleCapacityTable: React.FC<AlScheduleCapacityTableProps> = ({
     const [studentSchedules, setStudentSchedules] = useState<
         StudentScheduleModel[]
     >([]);
-    const [courses, setCourses] = useState<CourseModel[]>([]);
+    const [levels, setLevels] = useState<LevelModel[]>([]);
 
     /// Events
     useEffect(() => {
         (async () => {
-            const coursesPromise = listCourses();
-            const [courses] = await Promise.all([coursesPromise]);
-            setCourses(courses);
+            const levels = LevelFields.all.map((e) => ({
+                level: (LevelFields as any)[e]["value"],
+                description: (LevelFields as any)[e]["description"],
+            }));
+            setLevels(levels);
         })();
     }, []);
 
@@ -76,7 +75,7 @@ const AlScheduleCapacityTable: React.FC<AlScheduleCapacityTableProps> = ({
 
     useEffect(() => {
         setDataSource([...dataSource]);
-    }, [coursesFilter]);
+    }, [levelsFilter]);
 
     const handleOnReload = () => {};
 
@@ -98,14 +97,6 @@ const AlScheduleCapacityTable: React.FC<AlScheduleCapacityTableProps> = ({
             to,
             poolId
         );
-    };
-
-    const listCourses = async (): Promise<CourseModel[]> => {
-        return executeDataAsync(async () => {
-            const token = await getIdTokenCallback();
-            const courses = await courseController.list(token);
-            return courses;
-        }, setIsLoading);
     };
 
     /// Columns
@@ -160,10 +151,10 @@ const AlScheduleCapacityTable: React.FC<AlScheduleCapacityTableProps> = ({
         const _value = value as CellValueItem[];
 
         const quotas: { cellValueItem: CellValueItem[]; total: number }[] = [];
-        if (coursesFilter && coursesFilter.length > 0) {
-            const courseIds = coursesFilter.map((e) => e.courseId);
+        if (levelsFilter && levelsFilter.length > 0) {
+            const levelIds = levelsFilter.map((e) => e.level);
             const items = _value.filter((e) =>
-                courseIds.includes(e.course.courseId)
+                levelIds.includes(e.level.level)
             );
             const total = items.reduce(
                 (pre, cuv, cui) => pre + cuv.ss.length,
@@ -188,12 +179,10 @@ const AlScheduleCapacityTable: React.FC<AlScheduleCapacityTableProps> = ({
                     <div key={i} className={style["cell"]}>
                         {e.cellValueItem.map((e) => (
                             <div
-                                key={e.course.courseId}
+                                key={e.level.level}
                                 style={{
                                     background: legend.find(
-                                        (l) =>
-                                            l.course.courseId ===
-                                            e.course.courseId
+                                        (l) => l.level.level === e.level.level
                                     )?.color,
                                     width: "20%",
                                     textAlign: "center",
@@ -252,13 +241,13 @@ const AlScheduleCapacityTable: React.FC<AlScheduleCapacityTableProps> = ({
 
     /// Data source
     const [legend, setLegend] = useState<
-        { course: CourseModel; color: string }[]
+        { level: LevelModel; color: string }[]
     >([]);
     const [dataSource, setDataSource] = useState<TableValues[]>([]);
     useEffect(() => {
         if (
-            !courses ||
-            courses.length <= 0 ||
+            !levels ||
+            levels.length <= 0 ||
             !studentSchedules ||
             studentSchedules.length <= 0
         ) {
@@ -266,12 +255,12 @@ const AlScheduleCapacityTable: React.FC<AlScheduleCapacityTableProps> = ({
             setLegend([]);
         }
 
-        const uniqueCourses = Array.from(
-            new Set(studentSchedules.map((e) => e.courseId))
-        ).sort((a, b) => (a ?? 0) - (b ?? 0));
+        const uniqueLevels = Array.from(
+            new Set(studentSchedules.map((e) => e.level))
+        ); //.sort((a, b) => (a ?? 0) - (b ?? 0));
 
-        const legendCourses = courses.filter((e) =>
-            uniqueCourses.includes(e.courseId)
+        const legendLevels = levels.filter((e) =>
+            uniqueLevels.includes(e.level)
         );
 
         const legend = [];
@@ -287,9 +276,9 @@ const AlScheduleCapacityTable: React.FC<AlScheduleCapacityTableProps> = ({
             "#b33dc6",
         ];
 
-        for (let i = 0; i < legendCourses.length; i++) {
+        for (let i = 0; i < legendLevels.length; i++) {
             legend.push({
-                course: legendCourses[i],
+                level: legendLevels[i],
                 color: colors[i % colors.length],
             });
         }
@@ -311,7 +300,7 @@ const AlScheduleCapacityTable: React.FC<AlScheduleCapacityTableProps> = ({
             .sort((a, b) => a.millis - b.millis);
 
         const rows: TableValues[] = [];
-        const coursesObject = transformArrayToObjectCourses(courses);
+        const levelsObject = transformArrayToObjectLevels(levels);
         for (const hour of uniqueHours) {
             const row: TableValues = {
                 key: hour.millis.toString(),
@@ -331,25 +320,25 @@ const AlScheduleCapacityTable: React.FC<AlScheduleCapacityTableProps> = ({
             for (const ss of ssAtHour) {
                 switch (ss.initWeekDay) {
                     case 1:
-                        fillItem(row.monday, ss, coursesObject);
+                        fillItem(row.monday, ss, levelsObject);
                         break;
                     case 2:
-                        fillItem(row.tuesday, ss, coursesObject);
+                        fillItem(row.tuesday, ss, levelsObject);
                         break;
                     case 3:
-                        fillItem(row.wednesday, ss, coursesObject);
+                        fillItem(row.wednesday, ss, levelsObject);
                         break;
                     case 4:
-                        fillItem(row.thursday, ss, coursesObject);
+                        fillItem(row.thursday, ss, levelsObject);
                         break;
                     case 5:
-                        fillItem(row.friday, ss, coursesObject);
+                        fillItem(row.friday, ss, levelsObject);
                         break;
                     case 6:
-                        fillItem(row.saturday, ss, coursesObject);
+                        fillItem(row.saturday, ss, levelsObject);
                         break;
                     case 7:
-                        fillItem(row.sunday, ss, coursesObject);
+                        fillItem(row.sunday, ss, levelsObject);
                         break;
                 }
             }
@@ -370,34 +359,34 @@ const AlScheduleCapacityTable: React.FC<AlScheduleCapacityTableProps> = ({
         }
 
         setDataSource(rows);
-    }, [studentSchedules, courses]);
+    }, [studentSchedules, levels]);
 
     const fillItem = (
         day: CellValueItem[],
         ss: StudentScheduleModel,
-        coursesObject: { [key: number]: CourseModel }
+        levelsObject: { [key: string]: LevelModel }
     ) => {
-        const item = day.find((e) => e.course.courseId === ss.courseId);
+        const item = day.find((e) => e.level.level === ss.level);
         if (item) {
             item.ss.push(ss);
         } else {
             day.push({
-                course: coursesObject[ss.courseId ?? 0],
+                level: levelsObject[ss.level ?? 0],
                 ss: [ss],
             });
         }
     };
 
     const sortCell = (cell: CellValueItem[]) => {
-        cell.sort((a, b) => a.course.courseId - b.course.courseId);
+        cell.sort((a, b) => a.level.level.localeCompare(b.level.level));
     };
 
-    const transformArrayToObjectCourses = (
-        courses: CourseModel[]
-    ): { [key: number]: CourseModel } => {
-        const response: { [key: number]: CourseModel } = {};
-        for (const course of courses) {
-            response[course.courseId] = course;
+    const transformArrayToObjectLevels = (
+        levels: LevelModel[]
+    ): { [key: string]: LevelModel } => {
+        const response: { [key: string]: LevelModel } = {};
+        for (const level of levels) {
+            response[level.level] = level;
         }
         return response;
     };
@@ -443,7 +432,7 @@ const AlScheduleCapacityTable: React.FC<AlScheduleCapacityTableProps> = ({
                                 marginRight: "2px",
                             }}
                         ></div>
-                        <Text>{e.course.name}</Text>
+                        <Text>{e.level.description}</Text>
                     </div>
                 ))}
             </div>
