@@ -255,16 +255,11 @@ const AlScheduleCapacityTable: React.FC<AlScheduleCapacityTableProps> = ({
             setLegend([]);
         }
 
-        const uniqueLevels = Array.from(
-            new Set(studentSchedules.map((e) => e.level))
-        ); //.sort((a, b) => (a ?? 0) - (b ?? 0));
-
-        const legendLevels = levels.filter((e) =>
-            uniqueLevels.includes(e.level)
-        );
+        const legendLevels = levels;
 
         const legend = [];
         const colors = [
+            "#bdc3c7",
             "#ea5545",
             "#f46a9b",
             "#ef9b20",
