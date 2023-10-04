@@ -1,0 +1,14 @@
+.site-layout-background {
+    background: #fff;
+    border-radius: 1rem;
+}
+[data-theme="dark"] .site-layout-background {
+    background: #141414;
+}
+
+.page-header {
+    margin: 1rem 0rem;
+    padding: 2rem;
+    display: flex;
+    justify-content: space-between;
+}
