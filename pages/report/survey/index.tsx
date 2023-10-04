@@ -47,7 +47,7 @@ const AlReportSurveyResults: ComponentWithAuth<AlReportSurveyResultsProps> = (
     useEffect(() => {
         const poolId = Number(user.attributes?.["custom:pool_id"]);
         setSelectedValues({ ...selectedValues, poolId });
-    }, [user]);
+    }, [user]); // eslint-disable-line react-hooks/exhaustive-deps
 
     return (
         <Content style={{ margin: "0 16px" }}>

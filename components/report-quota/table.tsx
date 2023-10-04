@@ -71,11 +71,11 @@ const AlScheduleCapacityTable: React.FC<AlScheduleCapacityTableProps> = ({
                 setStudentSchedules(items);
             })();
         }
-    }, [filter]);
+    }, [filter]); // eslint-disable-line react-hooks/exhaustive-deps
 
     useEffect(() => {
         setDataSource([...dataSource]);
-    }, [levelsFilter]);
+    }, [levelsFilter]); // eslint-disable-line react-hooks/exhaustive-deps
 
     const handleOnReload = () => {};
 
