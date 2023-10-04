@@ -57,7 +57,7 @@ const SurveyReportFilter: React.FC<SurveyReportFilterProps> = ({
             const pools = (await listPoolsAPI())?.items ?? [];
             setPools(pools);
         })();
-    }, []);
+    }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
     //#region API calls
     const listQuestionsAPI = () => {
