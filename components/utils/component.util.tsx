@@ -3,6 +3,7 @@ import { message } from "antd";
 
 import { ErrorModel } from "lib/common/error.model";
 import { Arguments, Return } from "@lib/utils/function.util";
+import { ResponseError } from "entities/common/response-error";
 
 export async function executeDataAsync<F extends Function>(
     fn: F,
@@ -23,5 +24,38 @@ export async function executeDataAsync<F extends Function>(
         return undefined as Awaited<Return<F>>;
     } finally {
         setIsLoading?.(false);
+    }
+}
+
+export async function wrapTryCatchOverAPICall(
+    func: () => Promise<void>,
+    userMessage: string = "No pudimos cargar los datos. Intenta nuevamente."
+) {
+    try {
+        await func();
+    } catch (error) {
+        if ((error as ResponseError).errorCode) {
+            message.error((error as ResponseError).userMessage);
+        } else {
+            message.error(userMessage);
+            console.error(error);
+        }
+    }
+}
+
+export async function wrapTryCatchOverAPICallWithReturn<T>(
+    func: () => Promise<T>,
+    userMessage: string = "No pudimos cargar los datos. Intenta nuevamente."
+) {
+    try {
+        return await func();
+    } catch (error) {
+        if ((error as ResponseError).errorCode) {
+            message.error((error as ResponseError).userMessage);
+        } else {
+            message.error(userMessage);
+            console.error(error);
+        }
+        return undefined;
     }
 }
