@@ -82,7 +82,7 @@ const SurveyReport: React.FC<SurveyReportProps> = ({ selectedValues }) => {
         const poolId = selectedValues.poolId!;
         const questionId = selectedValues.questionId;
         getReportAPI(from, to, poolId, questionId);
-    }, [selectedValues]);
+    }, [selectedValues]); // eslint-disable-line react-hooks/exhaustive-deps
 
     useEffect(() => {
         if (

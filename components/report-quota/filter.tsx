@@ -42,7 +42,7 @@ const AlScheduleCapacityFilter: React.FC<AlScheduleCapacityFilterProps> = ({
     /// Listing
     useEffect(() => {
         listData();
-    }, []);
+    }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
     const listData = async () => {
         executeDataAsync(async () => {
