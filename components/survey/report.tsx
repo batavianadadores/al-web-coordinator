@@ -19,7 +19,49 @@ const SurveyReport: React.FC<SurveyReportProps> = ({ selectedValues }) => {
 
     const { updateTokenCallback } = useCognitoSession();
     const [getReportTrigger, getReportResult] = useLazyGetReportQuery();
-    const [columns, setColums] = useState<any[]>([]);
+    const columns = [
+        {
+            title: "Hora",
+            dataIndex: "hour",
+            key: "hour",
+            width: "150px",
+        },
+        {
+            title: "Lunes",
+            dataIndex: "1",
+            key: "1",
+        },
+        {
+            title: "Martes",
+            dataIndex: "2",
+            key: "2",
+        },
+        {
+            title: "Miércoles",
+            dataIndex: "3",
+            key: "3",
+        },
+        {
+            title: "Jueves",
+            dataIndex: "4",
+            key: "4",
+        },
+        {
+            title: "Viernes",
+            dataIndex: "5",
+            key: "5",
+        },
+        {
+            title: "Sábado",
+            dataIndex: "6",
+            key: "6",
+        },
+        {
+            title: "Domingo",
+            dataIndex: "7",
+            key: "7",
+        },
+    ];
     const [data, setData] = useState<any[]>([]);
     //#endregion
 
@@ -29,14 +71,15 @@ const SurveyReport: React.FC<SurveyReportProps> = ({ selectedValues }) => {
         if (
             isUndefinedOrNull(selectedValues.interval) ||
             isUndefinedOrNull(selectedValues.interval[0]) ||
-            isUndefinedOrNull(selectedValues.interval[1])
+            isUndefinedOrNull(selectedValues.interval[1]) ||
+            isUndefinedOrNull(selectedValues.poolId)
         ) {
             return;
         }
 
         const from = selectedValues.interval[0].toISOString();
         const to = selectedValues.interval[1].toISOString();
-        const poolId = selectedValues.poolId;
+        const poolId = selectedValues.poolId!;
         const questionId = selectedValues.questionId;
         getReportAPI(from, to, poolId, questionId);
     }, [selectedValues]);
@@ -50,13 +93,17 @@ const SurveyReport: React.FC<SurveyReportProps> = ({ selectedValues }) => {
         }
 
         const resultsData = getReportResult.data;
-        const survey = resultsData.survey;
-        const pools = resultsData.pools;
-        const questions = resultsData.questions;
-        const results = resultsData.results;
+        if (isUndefinedOrNull(resultsData)) {
+            setData([]);
+            return;
+        }
+
+        const survey = resultsData!.survey;
+        const pools = resultsData!.pools;
+        const questions = resultsData!.questions;
+        const results = resultsData!.results;
 
         if (isUndefinedOrNull(results)) {
-            setColums([]);
             setData([]);
             return;
         }
@@ -73,7 +120,7 @@ const SurveyReport: React.FC<SurveyReportProps> = ({ selectedValues }) => {
             const hourKey = time.set({ year: 2000, month: 1, day: 1 }).toISO();
             hoursSet.add(hourKey);
 
-            const dayKey = time.set({ hour: 0, minute: 0, second: 0 }).toISO();
+            const dayKey = time.get("weekday").toString();
             daySet.add(dayKey);
 
             if (isUndefinedOrNull(dataSource[hourKey])) {
@@ -88,15 +135,18 @@ const SurveyReport: React.FC<SurveyReportProps> = ({ selectedValues }) => {
         const uniqueDays = Array.from(daySet).sort();
 
         const rows = [];
-        const totalRow = {
+        const totalRow: { [key: string]: any } = {
+            key: "total",
             hour: "Total",
         };
-        const totalCountRow = {
+        const totalCountRow: { [key: string]: any } = {
+            key: "totalCount",
             hour: "Total encuestas",
         };
         for (const hour of uniqueHours) {
-            const row = {};
+            const row: { [key: string]: any } = {};
             row["hour"] = DateTime.fromISO(hour).toFormat("HH:mm");
+            row["key"] = hour;
             for (const day of uniqueDays) {
                 const total = dataSource[hour][day]?.reduce(
                     (prev, curr) => prev + Number(curr.total),
@@ -145,23 +195,6 @@ const SurveyReport: React.FC<SurveyReportProps> = ({ selectedValues }) => {
                 .toString();
         }
 
-        const columns = uniqueDays.map((day) => {
-            const dayDate = DateTime.fromISO(day);
-            return {
-                title: dayDate.toFormat("ccc dd"),
-                dataIndex: day,
-                key: day,
-                width: undefined,
-            };
-        });
-        columns.splice(0, 0, {
-            title: "Hora",
-            dataIndex: "hour",
-            key: "hour",
-            width: "150px",
-        });
-
-        setColums(columns);
         setData(rows);
     }, [getReportResult]);
     //#endregion
@@ -171,7 +204,7 @@ const SurveyReport: React.FC<SurveyReportProps> = ({ selectedValues }) => {
         from: string,
         to: string,
         poolId: number,
-        questionId: number
+        questionId?: number
     ) => {
         wrapTryCatchOverAPICallWithReturn(async () => {
             await updateTokenCallback();
@@ -179,7 +212,7 @@ const SurveyReport: React.FC<SurveyReportProps> = ({ selectedValues }) => {
                 from,
                 to,
                 poolId,
-                questionId,
+                questionId: questionId as any,
             }).unwrap();
             return result;
         });

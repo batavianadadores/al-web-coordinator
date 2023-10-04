@@ -1,23 +1,21 @@
-import moment, { Moment } from "moment";
+import { Moment } from "moment";
 import React, { useEffect, useState } from "react";
-import { RangePickerProps } from "antd/lib/date-picker";
-import { Typography, Space, DatePicker, Select, message } from "antd";
+import { Typography, Space, Select } from "antd";
 
-import { PoolModel } from "@lib/pool/model/pool.model";
 import useCognitoSession from "@hooks/useCognitoSession";
-import { ErrorModel } from "@lib/common/model/error.model";
 import { Question } from "entities/survey/question/question";
-import { ReportController } from "@lib/report/controller/report.controller";
+import { Pool } from "entities/pool/pool";
+import { useLazyListPoolsQuery } from "@features/pool/pool-api.slice";
 import { useLazyListQuestionsQuery } from "@features/survey/survey-api.slice";
 import { wrapTryCatchOverAPICallWithReturn } from "@components/utils/component.util";
 
 const { Option } = Select;
 const { Text } = Typography;
-const { RangePicker } = DatePicker;
 
 export type ReportFilterSelectedValues = {
-    interval?: [Moment, Moment];
+    interval: [Moment, Moment];
     questionId?: number;
+    poolId?: number;
 };
 
 type SurveyReportFilterProps = {
@@ -30,48 +28,17 @@ const SurveyReportFilter: React.FC<SurveyReportFilterProps> = ({
     onSelectedValuesChanged,
 }) => {
     const { updateTokenCallback } = useCognitoSession();
-    const reportController = new ReportController();
-
-    const disabledDate: RangePickerProps["disabledDate"] = (current) => {
-        return current && current > moment().endOf("day");
-    };
 
     const [getQuestionsTrigger, getQuestionsResult] =
         useLazyListQuestionsQuery();
     const [questions, setQuestions] = useState<Question[]>([]);
-    const [pools, setPools] = useState<PoolModel[]>([]);
-    const [isLoadingPoolsAndCourses, setIsLoadingPoolsAndCourses] =
-        useState(false);
 
-    useEffect(() => {
-        loadPoolsAndCourses();
-    }, []);
-
-    const loadPoolsAndCourses = async () => {
-        setIsLoadingPoolsAndCourses(true);
-        try {
-            const p = await reportController.listPools();
-            const allPools = new PoolModel();
-            allPools.name = "Todas las piscinas";
-            allPools.poolId = 0;
-            p.push(allPools);
-            p.sort((a, b) => a.poolId - b.poolId);
-
-            setPools(p);
-        } catch (error) {
-            if (error instanceof ErrorModel) {
-                message.error(error.message);
-            } else {
-                message.error("No pudimos completar tu solicitud");
-            }
-        } finally {
-            setIsLoadingPoolsAndCourses(false);
-        }
-    };
+    const [listPoolsTrigger, listPoolsResult] = useLazyListPoolsQuery();
+    const [pools, setPools] = useState<Pool[]>([]);
 
     useEffect(() => {
         (async () => {
-            const questions = [...(await listQuestionsAPI()).items];
+            const questions = [...((await listQuestionsAPI())?.items ?? [])];
             questions.splice(0, 0, {
                 questionId: 0,
                 description: "Todas las preguntas",
@@ -86,6 +53,10 @@ const SurveyReportFilter: React.FC<SurveyReportFilterProps> = ({
             });
             setQuestions(questions);
         })();
+        (async () => {
+            const pools = (await listPoolsAPI())?.items ?? [];
+            setPools(pools);
+        })();
     }, []);
 
     //#region API calls
@@ -93,6 +64,16 @@ const SurveyReportFilter: React.FC<SurveyReportFilterProps> = ({
         return wrapTryCatchOverAPICallWithReturn(async () => {
             await updateTokenCallback();
             const result = await getQuestionsTrigger(undefined).unwrap();
+            return result;
+        });
+    };
+    const listPoolsAPI = () => {
+        return wrapTryCatchOverAPICallWithReturn(async () => {
+            await updateTokenCallback();
+            const result = await listPoolsTrigger({
+                maxResults: 10,
+                startIndex: 0,
+            }).unwrap();
             return result;
         });
     };
@@ -110,11 +91,23 @@ const SurveyReportFilter: React.FC<SurveyReportFilterProps> = ({
             >
                 <Space>
                     <Text>
-                        Periodo:
+                        Periodo:{" "}
                         {`Del ${
-                            selectedValues?.interval?.[0]?.format("MMMM") ?? "-"
+                            selectedValues?.interval?.[0]?.format("DD MMMM") ??
+                            "-"
                         } al ${
-                            selectedValues?.interval?.[1]?.format("MMMM") ?? "-"
+                            selectedValues?.interval?.[1]?.format("DD MMMM") ??
+                            "-"
+                        }`}
+                    </Text>
+                </Space>
+                <Space>
+                    <Text>
+                        Piscina:{" "}
+                        {`${
+                            pools.find(
+                                (e) => e.poolId === selectedValues.poolId
+                            )?.name ?? "-"
                         }`}
                     </Text>
                 </Space>

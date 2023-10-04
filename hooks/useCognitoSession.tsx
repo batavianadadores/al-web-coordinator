@@ -2,8 +2,12 @@ import { useAuthenticator } from "@aws-amplify/ui-react";
 import { CognitoUserSession } from "amazon-cognito-identity-js";
 import { useCallback, useEffect, useState } from "react";
 
+import { useAppDispatch } from "app/hooks";
+import { setToken } from "@features/auth/auth.slice";
+
 function useCognitoSession() {
     const { user } = useAuthenticator((context) => [context.user]);
+    const dispatch = useAppDispatch();
 
     const getIdTokenCallback = useCallback(async () => {
         return new Promise<string>((resolve, reject) => {
@@ -21,9 +25,16 @@ function useCognitoSession() {
         });
     }, [user]);
 
+    const updateTokenCallback = useCallback(async () => {
+        const token = await getIdTokenCallback();
+        dispatch(setToken(token));
+        return token;
+    }, [user]);
+
     return {
         user,
         getIdTokenCallback,
+        updateTokenCallback,
     };
 }
 

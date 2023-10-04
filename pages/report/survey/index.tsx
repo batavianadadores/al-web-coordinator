@@ -1,16 +1,15 @@
 import { DateTime } from "luxon";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import moment, { Moment } from "moment";
 import { Typography, Button, Layout } from "antd";
 import { ComponentWithAuth } from "@components/auth/utils";
 
+import useCognitoSession from "@hooks/useCognitoSession";
 import styles from "./index.module.css";
-import moment, { Moment } from "moment";
-import SurveyFilter from "@components/survey/filter";
-import SurveyResults from "@components/survey/results";
+import SurveyReport from "@components/survey/report";
 import SurveyReportFilter, {
     ReportFilterSelectedValues,
 } from "@components/survey/filter-report";
-import SurveyReport from "@components/survey/report";
 
 const { Content } = Layout;
 const { Title } = Typography;
@@ -19,51 +18,41 @@ type AlReportSurveyResultsProps = {};
 const AlReportSurveyResults: ComponentWithAuth<AlReportSurveyResultsProps> = (
     props
 ) => {
-    /// Date interval
+    const { user } = useCognitoSession();
     const wholeMonth: [Moment, Moment] = [
-        moment(DateTime.now().startOf("month").toISO()),
-        moment(DateTime.now().endOf("day").toISO()),
+        moment(
+            DateTime.now()
+                .plus({ month: -1 })
+                .startOf("month")
+                .set({ day: 26 })
+                .startOf("day")
+                .toISO()
+        ),
+        moment(
+            DateTime.now()
+                .plus({ month: -1 })
+                .startOf("month")
+                .set({ day: 26 })
+                .endOf("day")
+                .plus({ month: 1 })
+                .toISO()
+        ),
     ];
-    const [selectedInterval, setSelectedInterval] =
-        useState<[Moment, Moment]>(wholeMonth);
 
     const [selectedValues, setSelectedValues] =
         useState<ReportFilterSelectedValues>({
             interval: wholeMonth,
         });
 
+    useEffect(() => {
+        const poolId = Number(user.attributes?.["custom:pool_id"]);
+        setSelectedValues({ ...selectedValues, poolId });
+    }, [user]);
+
     return (
         <Content style={{ margin: "0 16px" }}>
             <div className={styles["page-header"]}>
                 <Title level={3}>Encuestas</Title>
-                <Button type="primary"></Button>
-            </div>
-            <div
-                className={styles["site-layout-background"]}
-                style={{
-                    padding: 24,
-                    marginBottom: 20,
-                }}
-            >
-                <Title level={5} style={{ margin: "0" }}>
-                    Filtros
-                </Title>
-                <SurveyFilter
-                    selectedInterval={selectedInterval}
-                    onSelectedIntervalChange={setSelectedInterval}
-                />
-            </div>
-            <div
-                className={styles["site-layout-background"]}
-                style={{
-                    padding: 24,
-                    marginBottom: 20,
-                }}
-            >
-                <Title level={5} style={{ margin: "10px" }}>
-                    Resultados
-                </Title>
-                <SurveyResults interval={selectedInterval} />
             </div>
             <div
                 className={styles["site-layout-background"]}

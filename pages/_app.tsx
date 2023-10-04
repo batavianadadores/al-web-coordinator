@@ -18,6 +18,9 @@ import awsExports from "@components/auth/aws-exports";
 import { Authenticator } from "@aws-amplify/ui-react";
 import "@aws-amplify/ui-react/styles.css";
 
+import { Provider } from "react-redux";
+import { store } from "app/store";
+
 type NextComponentWithAuth = NextComponentType<NextPageContext, any, {}> &
     Partial<AuthEnabledComponentConfig>;
 
@@ -27,13 +30,17 @@ const MyApp: ({}: AppProps) => JSX.Element = ({ Component, pageProps }) => {
     return (
         <Authenticator.Provider>
             <ConfigProvider locale={esEs}>
-                {(Component as NextComponentWithAuth).auth ? (
-                    <AlAuth auth={(Component as NextComponentWithAuth).auth}>
+                <Provider store={store}>
+                    {(Component as NextComponentWithAuth).auth ? (
+                        <AlAuth
+                            auth={(Component as NextComponentWithAuth).auth}
+                        >
+                            <Component {...pageProps} />
+                        </AlAuth>
+                    ) : (
                         <Component {...pageProps} />
-                    </AlAuth>
-                ) : (
-                    <Component {...pageProps} />
-                )}
+                    )}
+                </Provider>
             </ConfigProvider>
         </Authenticator.Provider>
     );
