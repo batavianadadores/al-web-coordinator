@@ -39,6 +39,11 @@ const ALLateralMenu = () => {
                     label: <Link href="/report/quota">Cupos de piscina</Link>,
                     icon: <AppstoreOutlined />,
                 },
+                {
+                    key: "g3_2",
+                    label: <Link href="/report/survey">Encuestas</Link>,
+                    icon: <AppstoreOutlined />,
+                },
             ],
             type: "group",
         },
