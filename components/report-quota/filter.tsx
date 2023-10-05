@@ -22,13 +22,9 @@ const AlScheduleCapacityFilter: React.FC<AlScheduleCapacityFilterProps> = ({
     onChange,
     onLevelsChange,
 }) => {
-    const { getIdTokenCallback } = useCognitoSession();
+    const { getIdTokenCallback, user } = useCognitoSession();
 
     const poolController = new PoolController(
-        process.env.NEXT_PUBLIC_API_URL_BASE ?? ""
-    );
-
-    const courseController = new CourseController(
         process.env.NEXT_PUBLIC_API_URL_BASE ?? ""
     );
 
@@ -44,6 +40,14 @@ const AlScheduleCapacityFilter: React.FC<AlScheduleCapacityFilterProps> = ({
         listData();
     }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
+    useEffect(() => {
+        const poolId = Number(user.attributes?.["custom:pool_id"]);
+        const pool = pools.find((e) => e.poolId === poolId);
+        setSelectedPool(pool);
+
+        notifyChange(pool, selectedEndOfWeek as Dayjs);
+    }, [user, pools]); // eslint-disable-line react-hooks/exhaustive-deps
+
     const listData = async () => {
         executeDataAsync(async () => {
             const poolsPromise = poolController.list();
@@ -57,13 +61,6 @@ const AlScheduleCapacityFilter: React.FC<AlScheduleCapacityFilterProps> = ({
             setPools(pools);
             setLevels(levels);
         }, setIsLoading);
-    };
-
-    const handleOnPoolChange = (poolId: number) => {
-        const pool = pools.find((e) => e.poolId === poolId);
-        setSelectedPool(pool);
-
-        notifyChange(pool, selectedEndOfWeek as Dayjs);
     };
 
     const handleOnLevelsChange = (changedLevels: Level[]) => {
@@ -111,24 +108,14 @@ const AlScheduleCapacityFilter: React.FC<AlScheduleCapacityFilterProps> = ({
             >
                 <div
                     style={{
-                        display: "block",
+                        display: "flex",
+                        flexDirection: "column",
                         width: "100%",
                         padding: "0px 20px",
                     }}
                 >
                     <Text>Piscina: </Text>
-                    <Select
-                        value={selectedPool?.poolId}
-                        onChange={handleOnPoolChange}
-                        loading={isLoading}
-                        style={{
-                            width: "100%",
-                        }}
-                        options={pools.map((e) => ({
-                            value: e.poolId,
-                            label: e.name,
-                        }))}
-                    />
+                    <b>{selectedPool?.name}</b>
                 </div>
                 <div
                     style={{
