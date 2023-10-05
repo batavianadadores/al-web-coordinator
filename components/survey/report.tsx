@@ -185,7 +185,7 @@ const SurveyReport: React.FC<SurveyReportProps> = ({ selectedValues }) => {
             rows.push(row);
         }
         rows.push(totalRow);
-        rows.push(totalCountRow);
+
         for (const day of uniqueDays) {
             const total = totalRow[day];
             const totalCount = totalCountRow[day];
