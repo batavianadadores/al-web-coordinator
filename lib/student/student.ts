@@ -6,7 +6,6 @@ export type Level =
     | "beginner2"
     | "beginner3"
     | "intermeditate"
-    | "intermeditate2"
     | "advanced"
     | "adults";
 
@@ -19,7 +18,6 @@ export const LevelFields = Object.freeze({
         "beginner2",
         "beginner3",
         "intermeditate",
-        "intermeditate2",
         "advanced",
         "adults",
     ],
@@ -48,12 +46,8 @@ export const LevelFields = Object.freeze({
         value: "beginner3",
     },
     intermeditate: {
-        description: "Intermedio 1",
+        description: "Intermedio",
         value: "intermeditate",
-    },
-    intermeditate2: {
-        description: "Intermedio 2",
-        value: "intermeditate2",
     },
     advanced: {
         description: "Avanzado",
