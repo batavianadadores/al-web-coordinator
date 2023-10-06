@@ -136,7 +136,7 @@ const _SearchFields = Object.freeze({
 
 /**
  * @typedef Level
- * @type {('no_level'|'mom_baby'|'toddler_pool'|'beginner1'|'beginner2'|'beginner3'|'intermeditate'|'intermeditate2'|'advanced'|'adults')}
+ * @type {('no_level'|'mom_baby'|'toddler_pool'|'beginner1'|'beginner2'|'beginner3'|'intermeditate'|'advanced'|'adults')}
  */
 const _LevelFields = Object.freeze({
     all: [
@@ -147,7 +147,6 @@ const _LevelFields = Object.freeze({
         "beginner2",
         "beginner3",
         "intermeditate",
-        "intermeditate2",
         "advanced",
         "adults",
     ],
@@ -176,12 +175,8 @@ const _LevelFields = Object.freeze({
         value: "beginner3",
     },
     intermeditate: {
-        description: "Intermedio 1",
+        description: "Intermedio",
         value: "intermeditate",
-    },
-    intermeditate2: {
-        description: "Intermedio 2",
-        value: "intermeditate2",
     },
     advanced: {
         description: "Avanzado",
