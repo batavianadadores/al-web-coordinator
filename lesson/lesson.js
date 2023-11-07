@@ -3,7 +3,7 @@ const Student = require("../student/student");
 
 /**
  * @typedef State
- * @type {('pending'|'attended'|'missed'|'recovered'|'to_recover'|'canceled'|'frozen'|'transferred')}
+ * @type {('pending'|'attended'|'missed'|'recovered'|'to_recover'|'canceled'|'frozen'|'transferred'|'to_program')}
  */
 
 const States = Object.freeze({
@@ -16,6 +16,7 @@ const States = Object.freeze({
         "canceled",
         "frozen",
         "transferred",
+        "to_program",
     ],
     pending: {
         key: "pending",
@@ -49,6 +50,10 @@ const States = Object.freeze({
         key: "transferred",
         description: "Transferida",
     },
+    to_program: {
+        key: "to_program",
+        description: "Por programar",
+    },
 });
 
 /**
@@ -58,7 +63,7 @@ const States = Object.freeze({
  * @property {number} studentId                 - Student id, min 1
  * @property {string} init                      - Init, date string
  * @property {string} end                       - End, date string
- * @property {LessonState} state                - State
+ * @property {State} state                      - State
  * @property {string} [attendanceTime]          - Attendance time
  * @property {number} poolId                    - Pool id (sucursal)
  * @property {string} [updatedBy]               - Updated by, max 40 characters
@@ -103,7 +108,7 @@ class LessonModel {
 
     /**
      * State
-     * @type {LessonState}
+     * @type {State}
      */
     state;
 

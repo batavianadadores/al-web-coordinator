@@ -1,3 +1,4 @@
+const { DateTime } = require("luxon");
 const { ValidationError } = require("./common/validation.error");
 
 function isNull(value) {
@@ -517,7 +518,7 @@ function validateDateString(value, key, userKey, opts) {
     }
 
     if (typeof value !== "string") {
-        throw new ValidationError.Incorrect(
+        throw ValidationError.Incorrect(
             `${key} should be a string`,
             `${userKey} debe ser una fecha válida`
         );
@@ -525,8 +526,49 @@ function validateDateString(value, key, userKey, opts) {
 
     const date = new Date(value);
     if (isNaN(date.getTime())) {
-        throw new ValidationError.Incorrect(
+        throw ValidationError.Incorrect(
             `${key} should be a date`,
+            `${userKey} debe ser una fecha válida`
+        );
+    }
+
+    return value;
+}
+
+/**
+ * Validates if given value is a iso date string
+ * @param {any} value - Value
+ * @param {string} key - key
+ * @param {string} userKey - User key
+ * @param {object} opts - Options
+ * @param {boolean} opts.optional - A flag indicating if value can be null or undefined
+ * @returns {string}
+ */
+function validateISODateString(value, key, userKey, opts) {
+    if (isUndefinedOrNull(value)) {
+        if (isUndefinedOrNull(opts)) {
+            throw ValidationError.UndefinedOrNullValue(key, userKey);
+        }
+
+        if (opts.optional) {
+            return value;
+        }
+
+        throw ValidationError.UndefinedOrNullValue(key, userKey);
+    }
+
+    if (typeof value !== "string") {
+        throw ValidationError.Incorrect(
+            `${key} should be a string`,
+            `${userKey} debe ser una fecha válida`
+        );
+    }
+
+    const date = DateTime.fromISO(value);
+
+    if (!date.isValid) {
+        throw ValidationError.Incorrect(
+            `${key} should be a date in ISO format`,
             `${userKey} debe ser una fecha válida`
         );
     }
@@ -593,4 +635,5 @@ module.exports = {
     validateDateString,
     validateCommaSeparatedConstant,
     validateDecimal,
+    validateISODateString,
 };

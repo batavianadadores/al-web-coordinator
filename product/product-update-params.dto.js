@@ -26,6 +26,7 @@ const {
  * @property {number} [poolId]              - Pool id, min 1
  * @property {boolean} [showInWeb]          - Show in web
  * @property {Product.State} [state]        - State
+ * @property {boolean} [isTaxExonerated]    - Is tax exonerated
  */
 
 class ProductUpdateParamsDtoModel {
@@ -102,6 +103,12 @@ class ProductUpdateParamsDtoModel {
     state;
 
     /**
+     * Is tax exonerated
+     * @type {boolean|undefined}
+     */
+    isTaxExonerated;
+
+    /**
      * Creates model
      * @param {ProductUpdateParamsDto} dto - Dto
      * @returns {ProductUpdateParamsDtoModel}
@@ -135,7 +142,8 @@ class ProductUpdateParamsDtoModel {
                 isUndefined(this.lessonsPerWeek) &&
                 isUndefined(this.poolId) &&
                 isUndefined(this.showInWeb) &&
-                isUndefined(this.state)
+                isUndefined(this.state) &&
+                isUndefined(this.isTaxExonerated)
             ) {
                 throw ValidationError.NoValuesToUpdate();
             }
@@ -283,6 +291,15 @@ class ProductUpdateParamsDtoModel {
                         "el estado",
                         "Product.States.all",
                         "Estados del producto"
+                    );
+                }
+                break;
+            case "isTaxExonerated":
+                if (!isUndefined(this.isTaxExonerated)) {
+                    this.isTaxExonerated = validateBoolean(
+                        this.isTaxExonerated,
+                        "isTaxExonerated",
+                        "está exonerado de impuestos"
                     );
                 }
                 break;

@@ -28,6 +28,7 @@ const _States = Object.freeze({
  * @property {number} poolId                - Pool id, min 1
  * @property {boolean} showInWeb            - Show in web
  * @property {State} state                  - State, max 20 characters
+ * @property {boolean} isTaxExonerated      - Is tax exonerated
  */
 
 class ProductModel {
@@ -102,6 +103,12 @@ class ProductModel {
      * @type {State}
      */
     state;
+
+    /**
+     * Is tax exonerated
+     * @type {boolean}
+     */
+    isTaxExonerated;
 
     /**
      * Creates a product model
