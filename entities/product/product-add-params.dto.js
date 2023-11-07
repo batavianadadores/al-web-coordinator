@@ -25,6 +25,7 @@ const {
  * @property {number} poolId                - Pool id, min 1
  * @property {boolean} showInWeb            - Show in web
  * @property {Product.State} state          - State
+ * @property {boolean} isTaxExonerated      - Is tax exonerated
  */
 
 class ProductAddParamsDtoModel {
@@ -93,6 +94,12 @@ class ProductAddParamsDtoModel {
      * @type {Product.State}
      */
     state;
+
+    /**
+     * Is tax exonerated
+     * @type {boolean}
+     */
+    isTaxExonerated;
 
     /**
      * Creates model
@@ -227,6 +234,16 @@ class ProductAddParamsDtoModel {
                     "el estado",
                     "Product.States.all",
                     "Estados del producto"
+                );
+                break;
+            case "isTaxExonerated":
+                this.isTaxExonerated = validateBoolean(
+                    this.isTaxExonerated,
+                    "isTaxExonerated",
+                    "está exonerado de impuestos",
+                    {
+                        optional: true,
+                    }
                 );
                 break;
             default:
