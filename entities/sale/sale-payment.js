@@ -2,7 +2,7 @@ const { modelFromObject } = require("../utils");
 
 /**
  * @typedef Type
- * @type { ("yape" | "pos" | "efectivo" | "mercadopago" | "transferencia_bcp" | "transferencia_bbva" | "transferencia_scotiabank" | "transferencia_interbank" | "transferencia_banbif") }
+ * @type { ("yape" | "pos" | "efectivo" | "mercadopago" | "transferencia_bcp" | "transferencia_bbva" | "transferencia_scotiabank" | "transferencia_interbank" | "transferencia_banbif" | "club") }
  */
 
 const _Types = Object.freeze({
@@ -16,6 +16,7 @@ const _Types = Object.freeze({
         "transferencia_scotiabank",
         "transferencia_interbank",
         "transferencia_banbif",
+        "club",
     ],
     yape: { key: "yape", description: "Yape" },
     pos: { key: "pos", description: "POS" },
@@ -40,6 +41,10 @@ const _Types = Object.freeze({
     transferencia_banbif: {
         key: "transferencia_banbif",
         description: "Transferencia Banbif",
+    },
+    transferencia_banbif: {
+        key: "club",
+        description: "club",
     },
 });
 
