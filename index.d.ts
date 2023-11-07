@@ -199,7 +199,10 @@ type APILessonStateType =
     | "to_recover"
     | "missed"
     | "pending"
-    | "recovered";
+    | "recovered"
+    | "frozen"
+    | "transferred"
+    | "to_program";
 
 type APIRescheduleResponse = {
     studentScheduleId: number;

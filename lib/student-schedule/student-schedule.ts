@@ -4,7 +4,10 @@ export type State =
     | "missed"
     | "recovered"
     | "to_recover"
-    | "canceled";
+    | "canceled"
+    | "frozen"
+    | "transferred"
+    | "to_program";
 
 export const States = Object.freeze([
     "pending",
@@ -13,6 +16,9 @@ export const States = Object.freeze([
     "recovered",
     "to_recover",
     "canceled",
+    "frozen",
+    "transferred",
+    "to_program",
 ]);
 
 export const StateDescription = Object.freeze({
@@ -22,4 +28,7 @@ export const StateDescription = Object.freeze({
     recovered: "Recuperada",
     to_recover: "Por recuperar",
     canceled: "Cancelada",
+    frozen: "Congelada",
+    transferred: "Transferida",
+    to_program: "Por programar",
 });
