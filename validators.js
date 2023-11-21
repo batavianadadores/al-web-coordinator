@@ -486,7 +486,7 @@ function validateBoolean(value, key, userKey, opts) {
     }
 
     if (typeof value !== "boolean") {
-        throw new ValidationError.Incorrect(
+        throw ValidationError.Incorrect(
             `${key} should be a boolean`,
             `${userKey} debe ser true or false`
         );
@@ -599,7 +599,7 @@ function validateDecimal(value, key, userKey, opts) {
     }
 
     if (typeof value !== "string") {
-        throw new ValidationError.Incorrect(
+        throw ValidationError.Incorrect(
             `${key} should be a string decimal`,
             `${userKey} debe ser una número decimal`
         );
@@ -607,7 +607,7 @@ function validateDecimal(value, key, userKey, opts) {
 
     const regexDecimal = /^-?[0-9]{1,}(.[0-9]{1,2})?$/gm;
     if (!regexDecimal.test(value)) {
-        throw new ValidationError.Incorrect(
+        throw ValidationError.Incorrect(
             `${key} should be a decimal.`,
             `${userKey} debe ser un número decimal.`
         );
