@@ -9,9 +9,17 @@ import { ReportFilterSelectedValues } from "./filter-report";
 import { useLazyGetReportQuery } from "@features/survey/survey-api.slice";
 import { wrapTryCatchOverAPICallWithReturn } from "@components/utils/component.util";
 import { SurveyGetReportResults } from "entities/survey/survey/survey-get-report-response.dto";
+import { ColumnType } from "antd/lib/table";
+import { LevelFields } from "entities/student/student";
 
 type SurveyReportProps = {
     selectedValues: ReportFilterSelectedValues;
+};
+
+type TableValue = {
+    key: string;
+    hour: string;
+    [key: string]: any;
 };
 
 const SurveyReport: React.FC<SurveyReportProps> = ({ selectedValues }) => {
@@ -19,50 +27,9 @@ const SurveyReport: React.FC<SurveyReportProps> = ({ selectedValues }) => {
 
     const { updateTokenCallback } = useCognitoSession();
     const [getReportTrigger, getReportResult] = useLazyGetReportQuery();
-    const columns = [
-        {
-            title: "Hora",
-            dataIndex: "hour",
-            key: "hour",
-            width: "150px",
-        },
-        {
-            title: "Lunes",
-            dataIndex: "1",
-            key: "1",
-        },
-        {
-            title: "Martes",
-            dataIndex: "2",
-            key: "2",
-        },
-        {
-            title: "Miércoles",
-            dataIndex: "3",
-            key: "3",
-        },
-        {
-            title: "Jueves",
-            dataIndex: "4",
-            key: "4",
-        },
-        {
-            title: "Viernes",
-            dataIndex: "5",
-            key: "5",
-        },
-        {
-            title: "Sábado",
-            dataIndex: "6",
-            key: "6",
-        },
-        {
-            title: "Domingo",
-            dataIndex: "7",
-            key: "7",
-        },
-    ];
-    const [data, setData] = useState<any[]>([]);
+    const [columns, setColums] = useState<ColumnType<TableValue>[]>([]);
+    const [data, setData] = useState<TableValue[]>([]);
+    const [scroll, setScroll] = useState<{ x: string }>({ x: "100vw" });
     //#endregion
 
     //#region Effects
@@ -93,17 +60,11 @@ const SurveyReport: React.FC<SurveyReportProps> = ({ selectedValues }) => {
         }
 
         const resultsData = getReportResult.data;
-        if (isUndefinedOrNull(resultsData)) {
-            setData([]);
-            return;
-        }
-
-        const survey = resultsData!.survey;
-        const pools = resultsData!.pools;
         const questions = resultsData!.questions;
         const results = resultsData!.results;
 
         if (isUndefinedOrNull(results)) {
+            setColums([]);
             setData([]);
             return;
         }
@@ -120,7 +81,7 @@ const SurveyReport: React.FC<SurveyReportProps> = ({ selectedValues }) => {
             const hourKey = time.set({ year: 2000, month: 1, day: 1 }).toISO();
             hoursSet.add(hourKey);
 
-            const dayKey = time.get("weekday").toString();
+            const dayKey = time.set({ hour: 0, minute: 0, second: 0 }).toISO();
             daySet.add(dayKey);
 
             if (isUndefinedOrNull(dataSource[hourKey])) {
@@ -135,18 +96,19 @@ const SurveyReport: React.FC<SurveyReportProps> = ({ selectedValues }) => {
         const uniqueDays = Array.from(daySet).sort();
 
         const rows = [];
-        const totalRow: { [key: string]: any } = {
+        const totalRow: TableValue = {
             key: "total",
             hour: "Total",
         };
-        const totalCountRow: { [key: string]: any } = {
+        const totalCountRow: TableValue = {
             key: "totalCount",
             hour: "Total encuestas",
         };
         for (const hour of uniqueHours) {
-            const row: { [key: string]: any } = {};
-            row["hour"] = DateTime.fromISO(hour).toFormat("HH:mm");
-            row["key"] = hour;
+            const row: TableValue = {
+                key: hour,
+                hour: DateTime.fromISO(hour).toFormat("HH:mm"),
+            };
             for (const day of uniqueDays) {
                 const total = dataSource[hour][day]?.reduce(
                     (prev, curr) => prev + Number(curr.total),
@@ -155,6 +117,9 @@ const SurveyReport: React.FC<SurveyReportProps> = ({ selectedValues }) => {
                 const totalCount = dataSource[hour][day]?.reduce(
                     (prev, curr) => prev + Number(curr.totalCount),
                     0
+                );
+                const level = Array.from(
+                    new Set(dataSource[hour][day]?.flatMap((e) => e.level))
                 );
                 if (
                     !isUndefinedOrNull(total) &&
@@ -175,17 +140,19 @@ const SurveyReport: React.FC<SurveyReportProps> = ({ selectedValues }) => {
                         totalCountRow[day] = Number(totalCount);
                     }
 
-                    row[day] = new Decimal(total)
-                        .dividedBy(totalCount)
-                        .toFixed(2);
+                    row[day] = {
+                        value: new Decimal(total)
+                            .dividedBy(totalCount)
+                            .toFixed(2),
+                        level: level,
+                    };
                     continue;
                 }
-                row[day] = "-";
+                row[day] = { value: "-", level: [] };
             }
             rows.push(row);
         }
         rows.push(totalRow);
-
         for (const day of uniqueDays) {
             const total = totalRow[day];
             const totalCount = totalCountRow[day];
@@ -195,6 +162,72 @@ const SurveyReport: React.FC<SurveyReportProps> = ({ selectedValues }) => {
                 .toString();
         }
 
+        const columns: ColumnType<TableValue>[] = uniqueDays.map((day) => {
+            const dayDate = DateTime.fromISO(day);
+            return {
+                title: dayDate.toFormat("ccc dd"),
+                dataIndex: day,
+                key: day,
+                render: (value, record, index) => {
+                    if (typeof value === "string") {
+                        return (
+                            <div
+                                style={{
+                                    display: "flex",
+                                    flexDirection: "column",
+                                    justifyContent: "center",
+                                    alignItems: "center",
+                                }}
+                            >
+                                <span>{value}</span>
+                            </div>
+                        );
+                    }
+                    const levels = value.level.map(
+                        (e: keyof typeof LevelFields) =>
+                            (LevelFields[e] as any).description
+                    );
+                    return (
+                        <div
+                            style={{
+                                display: "flex",
+                                flexDirection: "column",
+                                justifyContent: "center",
+                                alignItems: "center",
+                            }}
+                        >
+                            <div>
+                                <span>{value.value}</span>
+                            </div>
+                            <div>
+                                {levels.map((e: string, i: number) => (
+                                    <span
+                                        key={i}
+                                        style={{
+                                            fontSize: "10px",
+                                            whiteSpace: "nowrap",
+                                            color: "gray",
+                                        }}
+                                    >
+                                        {e}
+                                    </span>
+                                ))}
+                            </div>
+                        </div>
+                    );
+                },
+            };
+        });
+        columns.splice(0, 0, {
+            title: "Hora",
+            dataIndex: "hour",
+            key: "hour",
+            width: 75,
+            fixed: "left",
+        });
+
+        setScroll({ x: `${columns.length * 85}px` });
+        setColums(columns);
         setData(rows);
     }, [getReportResult]);
     //#endregion
@@ -218,7 +251,14 @@ const SurveyReport: React.FC<SurveyReportProps> = ({ selectedValues }) => {
         });
     };
     //#endregion
-    return <Table columns={columns} dataSource={data} pagination={false} />;
+    return (
+        <Table
+            columns={columns}
+            dataSource={data}
+            pagination={false}
+            scroll={scroll}
+        />
+    );
 };
 
 export default SurveyReport;

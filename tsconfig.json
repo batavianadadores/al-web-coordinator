@@ -23,6 +23,7 @@
     "jsx": "preserve",
     "incremental": true,
     "strictPropertyInitialization": false,
+    "allowSyntheticDefaultImports": true,
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
   "exclude": ["node_modules"]

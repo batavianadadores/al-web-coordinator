@@ -1,6 +1,7 @@
-import { Moment } from "moment";
+import dayjs from "dayjs";
 import React, { useEffect, useState } from "react";
-import { Typography, Space, Select } from "antd";
+import { RangePickerProps } from "antd/lib/date-picker";
+import { Typography, Space, Select, DatePicker, message } from "antd";
 
 import useCognitoSession from "@hooks/useCognitoSession";
 import { Question } from "entities/survey/question/question";
@@ -11,9 +12,10 @@ import { wrapTryCatchOverAPICallWithReturn } from "@components/utils/component.u
 
 const { Option } = Select;
 const { Text } = Typography;
+const { RangePicker } = DatePicker;
 
 export type ReportFilterSelectedValues = {
-    interval: [Moment, Moment];
+    interval: [dayjs.Dayjs, dayjs.Dayjs];
     questionId?: number;
     poolId?: number;
 };
@@ -28,6 +30,10 @@ const SurveyReportFilter: React.FC<SurveyReportFilterProps> = ({
     onSelectedValuesChanged,
 }) => {
     const { updateTokenCallback } = useCognitoSession();
+
+    const disabledDate: RangePickerProps["disabledDate"] = (current) => {
+        return current && current.valueOf() > dayjs().endOf("day").valueOf();
+    };
 
     const [getQuestionsTrigger, getQuestionsResult] =
         useLazyListQuestionsQuery();
@@ -90,16 +96,32 @@ const SurveyReportFilter: React.FC<SurveyReportFilterProps> = ({
                 }}
             >
                 <Space>
-                    <Text>
-                        Periodo:{" "}
-                        {`Del ${
-                            selectedValues?.interval?.[0]?.format("DD MMMM") ??
-                            "-"
-                        } al ${
-                            selectedValues?.interval?.[1]?.format("DD MMMM") ??
-                            "-"
-                        }`}
-                    </Text>
+                    <Text>Intervalo:</Text>
+                    <RangePicker
+                        value={selectedValues.interval}
+                        onChange={(interval) => {
+                            let from = interval?.[0]!;
+                            let to = interval?.[1]!;
+                            from = from.startOf("day");
+                            to = to.endOf("day");
+                            if (to.diff(from, "day") > 30) {
+                                message.warning(
+                                    "El intervalo máximo es de 30 días"
+                                );
+                                to = from.add(30, "day");
+                            }
+                            console.log("from, to", {
+                                from: from.toISOString(),
+                                to: to.toISOString(),
+                            });
+                            onSelectedValuesChanged({
+                                ...selectedValues,
+                                interval: [from, to],
+                            });
+                        }}
+                        allowClear={false}
+                        disabledDate={disabledDate}
+                    />
                 </Space>
                 <Space>
                     <Text>
