@@ -1,3 +1,4 @@
+import dayjs from "dayjs";
 import { DateTime } from "luxon";
 import React, { useEffect, useState } from "react";
 import moment, { Moment } from "moment";
@@ -19,8 +20,8 @@ const AlReportSurveyResults: ComponentWithAuth<AlReportSurveyResultsProps> = (
     props
 ) => {
     const { user } = useCognitoSession();
-    const wholeMonth: [Moment, Moment] = [
-        moment(
+    const wholeMonth: [dayjs.Dayjs, dayjs.Dayjs] = [
+        dayjs(
             DateTime.now()
                 .plus({ month: -1 })
                 .startOf("month")
@@ -28,15 +29,7 @@ const AlReportSurveyResults: ComponentWithAuth<AlReportSurveyResultsProps> = (
                 .startOf("day")
                 .toISO()
         ),
-        moment(
-            DateTime.now()
-                .plus({ month: -1 })
-                .startOf("month")
-                .set({ day: 26 })
-                .endOf("day")
-                .plus({ month: 1 })
-                .toISO()
-        ),
+        dayjs(DateTime.now().endOf("day").toISO()),
     ];
 
     const [selectedValues, setSelectedValues] =
