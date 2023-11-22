@@ -110,10 +110,6 @@ const SurveyReportFilter: React.FC<SurveyReportFilterProps> = ({
                                 );
                                 to = from.add(30, "day");
                             }
-                            console.log("from, to", {
-                                from: from.toISOString(),
-                                to: to.toISOString(),
-                            });
                             onSelectedValuesChanged({
                                 ...selectedValues,
                                 interval: [from, to],
