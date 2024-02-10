@@ -44,6 +44,11 @@ const ALLateralMenu = () => {
                     label: <Link href="/report/survey">Encuestas</Link>,
                     icon: <AppstoreOutlined />,
                 },
+                {
+                    key: "g3_3",
+                    label: <Link href="/report/attendance">Asistencia</Link>,
+                    icon: <AppstoreOutlined />,
+                },
             ],
             type: "group",
         },
