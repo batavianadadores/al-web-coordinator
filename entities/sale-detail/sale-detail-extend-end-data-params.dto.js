@@ -4,6 +4,7 @@ const {
     validateInteger,
     validateDateString,
     validateArray,
+    validateString,
 } = require("../validators");
 
 /**
@@ -31,6 +32,12 @@ class SaleDetailExtendEndDateParamsDtoModel {
      * @type {number[]|undefined}
      */
     docIds;
+
+    /**
+     * Comment
+     * @type {string}
+     */
+    comment;
 
     /**
 
@@ -91,6 +98,14 @@ class SaleDetailExtendEndDateParamsDtoModel {
                         });
                     }
                 }
+                break;
+            case "comment":
+                this.comment = validateString(
+                    this.comment,
+                    "comment",
+                    "el comentario",
+                    { optional: true }
+                );
                 break;
             default:
                 throw new Error(
