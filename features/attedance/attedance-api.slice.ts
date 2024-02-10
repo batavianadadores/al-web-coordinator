@@ -26,7 +26,6 @@ export const apiAttedanceSlice = createApi({
                 AttendanceListParamsDto
             >({
                 query({ startDate, endDate, poolId }) {
-                    console.log("asdfad", { startDate, endDate, poolId });
                     return {
                         url: `/club/attedance`,
                         params: {
