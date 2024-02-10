@@ -1,41 +1,29 @@
 const { modelFromObject } = require("../utils");
-const {
-    isUndefinedOrNull,
-    validateInteger,
-    validateString,
-    validateDecimal,
-} = require("../validators");
+const { isUndefinedOrNull, validateInteger } = require("../validators");
 
 /**
- * @typedef {object} SaleDetailRefundTotalParamsDto
+ * @typedef {object} SaleDetailChangeProductSDParamsDto
  * @property {number} saleDetailId - Sale detail id, min 1.
- * @property {string} amount - Amount to refund.
- * @property {string} reason - Reason for the refund.
+ * @property {number} newProductId - Product id, min 1.
  */
 
-class SaleDetailRefundTotalParamsDtoModel {
+class SaleDetailChangeProductSDParamsDtoModel {
     /**
-     * Sale detail id, min 1
+     * SaleDetail id, min 1
      * @type {number}
      */
-    saleDetailId = undefined;
+    saleDetailId;
 
     /**
-     * Amount to refund
-     * @type {string}
+     * New product id, min 1
+     * @type {number}
      */
-    amount = undefined;
-
-    /**
-     * Reason for the refund
-     * @type {string}
-     */
-    reason = undefined;
+    newProductId;
 
     /**
      * Creates a model from dto
-     * @param {SaleDetailRefundTotalParamsDto} dto - Dto
-     * @returns {SaleDetailRefundTotalParamsDtoModel}
+     * @param {SaleDetailChangeProductSDParamsDto} dto - Dto
+     * @returns {SaleDetailChangeProductSDParamsDtoModel}
      */
     static fromDto = (dto) => {
         return modelFromObject(dto, this);
@@ -62,24 +50,17 @@ class SaleDetailRefundTotalParamsDtoModel {
                 this.saleDetailId = validateInteger(
                     this.saleDetailId,
                     "saleDetailId",
-                    "el id del detalle de la venta",
+                    "el id del detalle de venta",
                     {
                         min: 1,
                     }
                 );
                 break;
-            case "amount":
-                this.amount = validateDecimal(
-                    this.amount,
-                    "amount",
-                    "el monto a devolver"
-                );
-                break;
-            case "reason":
-                this.reason = validateString(
-                    this.reason,
-                    "reason",
-                    "el motivo de la devolución",
+            case "newProductId":
+                this.newProductId = validateInteger(
+                    this.newProductId,
+                    "newProductId",
+                    "el id del nuevo producto",
                     {
                         min: 1,
                     }
@@ -94,5 +75,5 @@ class SaleDetailRefundTotalParamsDtoModel {
 }
 
 module.exports = {
-    SaleDetailRefundTotalParamsDtoModel,
+    SaleDetailChangeProductSDParamsDtoModel,
 };
