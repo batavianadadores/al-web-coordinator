@@ -25,13 +25,14 @@ export const apiAttedanceSlice = createApi({
                 Pagination<AttendanceListResponse>,
                 AttendanceListParamsDto
             >({
-                query({ startDate, endDate, poolId }) {
+                query({ startDate, endDate, poolId, isPreTeam = false }) {
                     return {
                         url: `/club/attedance`,
                         params: {
                             startDate: startDate,
                             endDate: endDate,
                             poolId: poolId,
+                            isPreTeam: isPreTeam,
                         },
                     };
                 },

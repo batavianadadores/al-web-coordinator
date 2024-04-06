@@ -14,6 +14,7 @@ type AttedanceReportProps = {
     poolId: number;
     startDate: string;
     endDate: string;
+    isPReTeam?: boolean;
 };
 
 type TableValue = {
@@ -29,6 +30,7 @@ const AttedanceReport: React.FC<AttedanceReportProps> = ({
     poolId,
     startDate,
     endDate,
+    isPReTeam = false,
 }) => {
     //#region Fields and Properties
     const { updateTokenCallback } = useCognitoSession();
@@ -201,6 +203,7 @@ const AttedanceReport: React.FC<AttedanceReportProps> = ({
                 startDate,
                 endDate,
                 poolId,
+                isPreTeam: isPReTeam,
             }).unwrap();
             return result;
         });

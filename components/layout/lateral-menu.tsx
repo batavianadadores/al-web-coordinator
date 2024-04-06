@@ -49,6 +49,15 @@ const ALLateralMenu = () => {
                     label: <Link href="/report/attendance">Asistencia</Link>,
                     icon: <AppstoreOutlined />,
                 },
+                {
+                    key: "g3_4",
+                    label: (
+                        <Link href="/report/attendance-pre-team">
+                            Asistencia Pre Equipo
+                        </Link>
+                    ),
+                    icon: <AppstoreOutlined />,
+                },
             ],
             type: "group",
         },
