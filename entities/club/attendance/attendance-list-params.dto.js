@@ -4,6 +4,7 @@ const {
     validateInteger,
     isUndefinedOrNull,
     validateDateString,
+    validateStringBoolean,
 } = require("../../validators");
 const { DateTime } = require("luxon");
 
@@ -12,6 +13,7 @@ const { DateTime } = require("luxon");
  * @property {string} startDate - Start date
  * @property {string} endDate - End date
  * @property {number} poolId - Pool id
+ * @property {boolean} isPreTeam - Is pre team
  */
 
 class AttendanceListParamsDtoModel {
@@ -32,6 +34,12 @@ class AttendanceListParamsDtoModel {
      * @type {number}
      */
     poolId;
+
+    /**
+     * Is Pre team
+     * @type {boolean}
+     */
+    isPreTeam;
 
     /**
      * Creates dto model from dto
@@ -95,6 +103,13 @@ class AttendanceListParamsDtoModel {
                     "poolId",
                     "el id de la piscina",
                     { min: 1 }
+                );
+                break;
+            case "isPreTeam":
+                this.isPreTeam = validateStringBoolean(
+                    this.isPreTeam,
+                    "isPreTeam",
+                    "es pre equipo"
                 );
                 break;
             default:

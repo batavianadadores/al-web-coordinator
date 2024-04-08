@@ -1,6 +1,31 @@
 const { modelFromObject } = require("../utils");
 
 /**
+ * @typedef InvoiceType
+ * @type {('B'|'F'|'R')}
+ */
+
+const InvoiceTypes = Object.freeze({
+    all: ["B", "F", "R", "N"],
+    B: {
+        key: "B",
+        description: "Boleta",
+    },
+    F: {
+        key: "F",
+        description: "Factura",
+    },
+    R: {
+        key: "R",
+        description: "Recibo",
+    },
+    N: {
+        key: "N",
+        description: "Nota de crédito",
+    },
+});
+
+/**
  * @typedef {object} SaleInvoice
  * @property {number} saleInvoiceId - Sale invoice id, min 1
  * @property {number} saleId - Sale id, min 1
@@ -11,7 +36,7 @@ const { modelFromObject } = require("../utils");
  * @property {string} [eiMotherFamilyName] - Electronic Invoice Mother Family Name
  * @property {string} [eiAddress] - Electronic Invoice Address, max 100 characters
  * @property {string} eiEmail - Electronic Invoice Email
- * @property {string} [iType] - Invoice Type, either B, F or R
+ * @property {InvoiceType} [iType] - Invoice Type, either B, F or R
  * @property {string} iState - Invoice State, either done, error or pending
  * @property {string} iAction - Invoice Action, either emit or cancel
  * @property {number} [issuerId] - Issuer Id, min 1
@@ -83,7 +108,7 @@ class SaleInvoiceModel {
 
     /**
      * Invoice Type, either B, F or R
-     * @type {string|undefined}
+     * @type {InvoiceType|undefined}
      */
     iType;
 
@@ -169,4 +194,4 @@ class SaleInvoiceModel {
     }
 }
 
-module.exports = { SaleInvoiceModel };
+module.exports = { SaleInvoiceModel, InvoiceTypes };
