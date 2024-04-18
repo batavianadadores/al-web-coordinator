@@ -20,6 +20,7 @@ import {
     TableValues,
 } from "./table.entities";
 import { CapacityTypes, CapacityTypeDescription } from "@lib/course/course";
+import { PERSONALIZED_LEVEL } from "./constans";
 
 const { Title, Text } = Typography;
 
@@ -56,6 +57,7 @@ const AlScheduleCapacityTable: React.FC<AlScheduleCapacityTableProps> = ({
                 level: (LevelFields as any)[e]["value"],
                 description: (LevelFields as any)[e]["description"],
             }));
+            levels.push(PERSONALIZED_LEVEL);
             setLevels(levels);
         })();
     }, []);
@@ -77,7 +79,18 @@ const AlScheduleCapacityTable: React.FC<AlScheduleCapacityTableProps> = ({
         setDataSource([...dataSource]);
     }, [levelsFilter]); // eslint-disable-line react-hooks/exhaustive-deps
 
-    const handleOnReload = () => {};
+    const handleOnReload = () => {
+        if (filter) {
+            (async () => {
+                const items = await listSS(
+                    filter.from,
+                    filter.to,
+                    filter.pool.poolId
+                );
+                setStudentSchedules(items);
+            })();
+        }
+    };
 
     /// Data
     const listSS = async (
@@ -361,6 +374,9 @@ const AlScheduleCapacityTable: React.FC<AlScheduleCapacityTableProps> = ({
         ss: StudentScheduleModel,
         levelsObject: { [key: string]: LevelModel }
     ) => {
+        if (ss.courseId?.toString() === PERSONALIZED_LEVEL.level) {
+            ss.level = PERSONALIZED_LEVEL.level as any;
+        }
         const item = day.find((e) => e.level.level === ss.level);
         if (item) {
             item.ss.push(ss);

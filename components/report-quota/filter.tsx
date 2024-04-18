@@ -10,6 +10,7 @@ import useCognitoSession from "@hooks/useCognitoSession";
 import { PoolController } from "@lib/pool/pool.controller";
 import { CourseController } from "@lib/course/course.controller";
 import { executeDataAsync } from "@components/utils/component.util";
+import { PERSONALIZED_LEVEL } from "./constans";
 
 const { Text } = Typography;
 
@@ -55,6 +56,7 @@ const AlScheduleCapacityFilter: React.FC<AlScheduleCapacityFilterProps> = ({
                 level: (LevelFields as any)[field]["value"],
                 description: (LevelFields as any)[field]["description"],
             }));
+            levels.push(PERSONALIZED_LEVEL);
 
             const [pools] = await Promise.all([poolsPromise]);
 
@@ -69,9 +71,7 @@ const AlScheduleCapacityFilter: React.FC<AlScheduleCapacityFilterProps> = ({
     };
 
     const handleOnFilterClic = () => {
-        if (selectedLevels && selectedLevels.length > 0) {
-            onLevelsChange(selectedLevels);
-        }
+        onLevelsChange(selectedLevels as any);
     };
 
     const onWeekChange = (value: Dayjs | null, dateString: string) => {
