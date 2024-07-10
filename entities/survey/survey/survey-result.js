@@ -8,6 +8,7 @@ const Survey = require("./survey");
  * @property {string} title - Title
  * @property {string} description - Description
  * @property {string} descriptionAdult - Description adult
+ * @property {string} type - Type ('professor', 'facilities', 'attention')
  * @property {number} total - Total
  * @property {number} totalCount - Total count
  */
