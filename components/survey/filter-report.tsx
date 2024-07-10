@@ -44,7 +44,11 @@ const SurveyReportFilter: React.FC<SurveyReportFilterProps> = ({
 
     useEffect(() => {
         (async () => {
-            const questions = [...((await listQuestionsAPI())?.items ?? [])];
+            const questions = [
+                ...((await listQuestionsAPI())?.items.filter(
+                    (e) => e.type === "professor"
+                ) ?? []),
+            ];
             questions.splice(0, 0, {
                 questionId: 0,
                 description: "Todas las preguntas",
@@ -56,6 +60,7 @@ const SurveyReportFilter: React.FC<SurveyReportFilterProps> = ({
                 minScoreText: "",
                 isDeleted: false,
                 descriptionAdult: "",
+                type: "professor",
             });
             setQuestions(questions);
         })();

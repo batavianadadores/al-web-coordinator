@@ -10,6 +10,11 @@
  * @property {string} maxScoreText - Max score text
  * @property {boolean} isDeleted - Is deleted
  * @property {string} descriptionAdult - Description adult
+ * @property {QuestionType} type - Type
+ */
+
+/**
+ * @typedef {('attention'|'facilities'|'professor')} QuestionType
  */
 
 class QuestionModel {

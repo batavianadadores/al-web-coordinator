@@ -11,12 +11,13 @@ const Pool = require("../../pool/pool");
  * @property {number} totalCount - Total count
  * @property {number[]} studentIds - Student Ids
  * @property {string[]} level - Level
+ * @property {Question.QuestionType} type - Type
  */
 
 /**
  * @typedef {object} SurveyGetReportResponseDto
  * @property {Survey.Survey} survey - Survey
- * @property {Question[]} questions - Questions
+ * @property {Question.Question[]} questions - Questions
  * @property {Pool.Pool[]} pools - Pools
  * @property {SurveyGetReportResults[]} results - Results
  */
