@@ -60,8 +60,12 @@ const SurveyReport: React.FC<SurveyReportProps> = ({ selectedValues }) => {
         }
 
         const resultsData = getReportResult.data;
-        const questions = resultsData!.questions;
-        const results = resultsData!.results;
+        const questions = resultsData!.questions.filter(
+            (e) => e.type == "professor"
+        );
+        const results = resultsData!.results.filter(
+            (e) => e.type === "professor"
+        );
 
         if (isUndefinedOrNull(results)) {
             setColums([]);
