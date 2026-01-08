@@ -34,23 +34,23 @@ export const LevelFields = Object.freeze({
         value: "toddler_pool",
     },
     beginner1: {
-        description: "Principiante 1",
+        description: "Burbujas",
         value: "beginner1",
     },
     beginner2: {
-        description: "Principiante 2",
+        description: "Flecha",
         value: "beginner2",
     },
     beginner3: {
-        description: "Principiante 3",
+        description: "Pateo",
         value: "beginner3",
     },
     intermeditate: {
-        description: "Intermedio",
+        description: "Braceo circular",
         value: "intermeditate",
     },
     advanced: {
-        description: "Avanzado",
+        description: "Estilos",
         value: "advanced",
     },
     adults: {
