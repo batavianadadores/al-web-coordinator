@@ -54,7 +54,9 @@ const SurveyReport: React.FC<SurveyReportProps> = ({ selectedValues }) => {
     useEffect(() => {
         if (
             isUndefinedOrNull(getReportResult) ||
-            isUndefinedOrNull(getReportResult.data)
+            isUndefinedOrNull(getReportResult.data) ||
+            isUndefinedOrNull(getReportResult.data?.results) ||
+            isUndefinedOrNull(getReportResult.data?.questions)
         ) {
             return;
         }
