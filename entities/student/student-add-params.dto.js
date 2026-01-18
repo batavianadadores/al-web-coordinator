@@ -23,6 +23,7 @@ const {
  * @property {string} email             - Email
  * @property {string} [comment]         - Comment
  * @property {Student.Level} level      - Level
+ * @property {string} [licensePlate]    - License plate
  */
 
 class StudentAddParamsDtoModel {
@@ -91,6 +92,12 @@ class StudentAddParamsDtoModel {
      * @type {Student.Level}
      */
     level;
+
+    /**
+     * License plate
+     * @type {string|undefined}
+     */
+    licensePlate;
 
     /**
      * Creates model
@@ -247,6 +254,20 @@ class StudentAddParamsDtoModel {
                     "Niveles",
                     {
                         optional: true,
+                    }
+                );
+                break;
+            case "licensePlate":
+                this.licensePlate = validateString(
+                    this.licensePlate,
+                    "licensePlate",
+                    "placa del vehículo del alumno",
+                    {
+                        max: 6,
+                        optional: true,
+                        regex: /^[a-zA-Z0-9]{1,6}$/,
+                        regexExplanation:
+                            "La placa debe contener solo letras mayúsculas y números, y tener una longitud máxima de 6 caracteres.",
                     }
                 );
                 break;

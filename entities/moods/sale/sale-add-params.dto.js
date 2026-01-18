@@ -94,15 +94,24 @@ class SaleAddParamsDtoModel {
                 }
                 break;
             case "invoiceData":
-                validateString(
-                    this.invoiceData.name,
-                    "name",
-                    "nombre o razón social del cliente",
-                    {
-                        min: 1,
-                    }
-                );
-                if (!isEmail(this.invoiceData.email)) {
+                if (
+                    !isUndefinedOrNull(this.invoiceData.name) &&
+                    this.invoiceData.name.trim() !== ""
+                ) {
+                    validateString(
+                        this.invoiceData.name,
+                        "name",
+                        "nombre o razón social del cliente",
+                        {
+                            min: 1,
+                            optional: true,
+                        }
+                    );
+                }
+                if (
+                    !isUndefinedOrNull(this.invoiceData.email) &&
+                    !isEmail(this.invoiceData.email)
+                ) {
                     const message = `The parameter: email is not a valid email`;
                     const userMessage = `El correo electrónico no es un valor válido`;
                     throw new ValidationError(message, userMessage);
@@ -135,6 +144,7 @@ class SaleAddParamsDtoModel {
                         {
                             regex: /^[0-9]{8}$/,
                             regexExplanation: "8 dígitos",
+                            optional: true,
                         }
                     );
                 }

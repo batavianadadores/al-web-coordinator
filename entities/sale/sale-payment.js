@@ -42,9 +42,9 @@ const _Types = Object.freeze({
         key: "transferencia_banbif",
         description: "Transferencia Banbif",
     },
-    transferencia_banbif: {
+    club: {
         key: "club",
-        description: "club",
+        description: "Club",
     },
 });
 
