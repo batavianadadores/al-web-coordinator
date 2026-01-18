@@ -29,6 +29,7 @@ const {
  * @property {boolean} [allowSms]         - Allow SMS, default true. A flag that indicates if student allows marketing communication by SMS
  * @property {boolean} [allowEmail]       - Allow Email, default true. A flag that indicates if student allows marketing communication by e-mail
  * @property {Student.Level} [level]      - Level
+ * @property {string} [licensePlate]      - License plate
  */
 
 class StudentUpdateParamsDtoModel {
@@ -123,6 +124,12 @@ class StudentUpdateParamsDtoModel {
     level;
 
     /**
+     * License plate
+     * @type {string|undefined}
+     */
+    licensePlate;
+
+    /**
      * Creates model
      * @param {StudentUpdateParamsDto} dto - Dto
      * @returns {StudentUpdateParamsDtoModel}
@@ -159,7 +166,8 @@ class StudentUpdateParamsDtoModel {
                 isUndefined(this.allowInscription) &&
                 isUndefined(this.allowSms) &&
                 isUndefined(this.allowEmail) &&
-                isUndefined(this.level)
+                isUndefined(this.level) &&
+                isUndefined(this.licensePlate)
             ) {
                 throw ValidationError.NoValuesToUpdate();
             }
@@ -352,8 +360,25 @@ class StudentUpdateParamsDtoModel {
                         "level",
                         "el nivel del alumno",
                         "Student.LevelFields.all",
-                        "Niveles", {
-                            optional: true
+                        "Niveles",
+                        {
+                            optional: true,
+                        }
+                    );
+                }
+                break;
+            case "licensePlate":
+                if (!isUndefined(this.licensePlate)) {
+                    this.licensePlate = validateString(
+                        this.licensePlate,
+                        "licensePlate",
+                        "placa del vehículo del alumno",
+                        {
+                            max: 6,
+                            optional: true,
+                            regex: /^[a-zA-Z0-9]{1,6}$/,
+                            regexExplanation:
+                                "La placa debe contener solo letras mayúsculas y números, y tener una longitud máxima de 6 caracteres.",
                         }
                     );
                 }

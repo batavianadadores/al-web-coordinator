@@ -12,6 +12,7 @@ const {
  * @property {number} saleDetailId - Sale detail id, min 1
  * @property {string} endDate - End date, date string
  * @property {number[]} [docIds] - Document ids
+ * @property {string} [comment] - Comment
  */
 
 class SaleDetailExtendEndDateParamsDtoModel {

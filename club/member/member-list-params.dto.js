@@ -6,6 +6,7 @@ const {
     validateInteger,
     isUndefinedOrNull,
     validateCommaSeparatedConstant,
+    validateStringBoolean,
 } = require("../../validators");
 
 /**
@@ -13,6 +14,7 @@ const {
  * @property {number} [studentId] -  Student id, min 1
  * @property {string} [states] -  State
  * @property {string} [sortBy] -  Sort by, comma separated values
+ * @property {boolean} isActive - Is Active
  *
  * @typedef {PaginationDtoModel.PaginationDto & MemberListParamsDtoType} MemberListParamsDto
  */
@@ -35,6 +37,12 @@ class MemberListParamsDtoModel extends PaginationDtoModel {
      * @type {string|undefined}
      */
     sortBy;
+
+    /**
+     * Is active
+     * @type {boolean|undefined}
+     */
+    isActive;
 
     /**
      * Creates dto model from dto
@@ -92,6 +100,14 @@ class MemberListParamsDtoModel extends PaginationDtoModel {
                     "ordenar por",
                     "Member.SortByFields.all",
                     "los campos por los que ordenar",
+                    { optional: true }
+                );
+                break;
+            case "isActive":
+                this.isActive = validateStringBoolean(
+                    this.isActive,
+                    "isActive",
+                    "es activo",
                     { optional: true }
                 );
                 break;

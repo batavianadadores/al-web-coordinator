@@ -9,6 +9,7 @@ const Pool = require("../../pool/pool");
  * @property {string} time - Time
  * @property {string} total - Total
  * @property {number} totalCount - Total count
+ * @property {number[]} studentIds - Student Ids
  * @property {string[]} level - Level
  */
 

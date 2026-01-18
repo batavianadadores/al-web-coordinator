@@ -601,7 +601,7 @@ function validateDecimal(value, key, userKey, opts) {
     if (typeof value !== "string") {
         throw ValidationError.Incorrect(
             `${key} should be a string decimal`,
-            `${userKey} debe ser una número decimal`
+            `${userKey} debe ser un número decimal`
         );
     }
 

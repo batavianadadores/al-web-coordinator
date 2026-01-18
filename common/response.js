@@ -72,11 +72,13 @@ class ResponseModel {
 
     /**
      * Creates a ResponseModel with a updated successfully message
-     * @returns {ResponseModel}
+     * @template T
+     * @param {T} data - Data
+     * @returns {ResponseModel<T>}
      */
-    static updatedSuccesfully() {
+    static updatedSuccesfully(data) {
         const message = "Se actualizó correctamente";
-        return this.withMessage(message);
+        return this.withMessageAndData(message, data);
     }
 
     /**
