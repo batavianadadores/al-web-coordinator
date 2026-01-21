@@ -22,7 +22,7 @@ const {
  * @property {string} [phoneNumber2]    - Phone number 2
  * @property {string} email             - Email
  * @property {string} [comment]         - Comment
- * @property {Student.Level} level      - Level
+ * @property {number} [level]           - Level
  * @property {string} [licensePlate]    - License plate
  */
 
@@ -89,7 +89,7 @@ class StudentAddParamsDtoModel {
 
     /**
      * Level
-     * @type {Student.Level}
+     * @type {number|undefined}
      */
     level;
 
@@ -132,7 +132,7 @@ class StudentAddParamsDtoModel {
                     "nombre del alumno",
                     {
                         min: 1,
-                    }
+                    },
                 );
                 break;
             case "fatherFamilyName":
@@ -142,7 +142,7 @@ class StudentAddParamsDtoModel {
                     "apellido paterno del alumno",
                     {
                         min: 1,
-                    }
+                    },
                 );
                 break;
             case "motherFamilyName":
@@ -152,7 +152,7 @@ class StudentAddParamsDtoModel {
                     "apellido materno del alumno",
                     {
                         min: 1,
-                    }
+                    },
                 );
                 break;
             case "idType":
@@ -162,7 +162,7 @@ class StudentAddParamsDtoModel {
                     "idType",
                     "tipo de documento del alumno",
                     "Student.IdTypes.all",
-                    "Tipos de documento"
+                    "Tipos de documento",
                 );
                 break;
             case "idNumber":
@@ -173,7 +173,7 @@ class StudentAddParamsDtoModel {
                 if (isUndefinedOrNull(idType)) {
                     throw ValidationError.UndefinedOrNullValue(
                         "idType",
-                        "tipo de documento del alumno"
+                        "tipo de documento del alumno",
                     );
                 }
 
@@ -184,7 +184,7 @@ class StudentAddParamsDtoModel {
                     {
                         regex: idType.validator,
                         regexExplanation: idType.validatorExplanation,
-                    }
+                    },
                 );
                 break;
             case "birthday":
@@ -194,7 +194,7 @@ class StudentAddParamsDtoModel {
                     "fecha de nacimiento del alumno",
                     {
                         optional: true,
-                    }
+                    },
                 );
                 break;
             case "phoneNumber1":
@@ -205,7 +205,7 @@ class StudentAddParamsDtoModel {
                     {
                         max: 30,
                         optional: true,
-                    }
+                    },
                 );
                 break;
             case "phoneNumber2":
@@ -216,7 +216,7 @@ class StudentAddParamsDtoModel {
                     {
                         max: 30,
                         optional: true,
-                    }
+                    },
                 );
                 break;
             case "email":
@@ -226,7 +226,7 @@ class StudentAddParamsDtoModel {
                     "correo electrónico del alumno",
                     {
                         min: 1,
-                    }
+                    },
                 );
                 if (!isEmail(this.email)) {
                     const message = "Email is not valid";
@@ -241,20 +241,18 @@ class StudentAddParamsDtoModel {
                     "comentario del alumno",
                     {
                         optional: true,
-                    }
+                    },
                 );
                 break;
             case "level":
-                this.level = validateConstant(
+                this.level = validateInteger(
                     this.level,
-                    Student.LevelFields.all,
                     "level",
                     "el nivel del alumno",
-                    "Student.LevelFields.all",
-                    "Niveles",
                     {
                         optional: true,
-                    }
+                        min: 1,
+                    },
                 );
                 break;
             case "licensePlate":
@@ -268,12 +266,12 @@ class StudentAddParamsDtoModel {
                         regex: /^[a-zA-Z0-9]{1,6}$/,
                         regexExplanation:
                             "La placa debe contener solo letras mayúsculas y números, y tener una longitud máxima de 6 caracteres.",
-                    }
+                    },
                 );
                 break;
             default:
                 throw new Error(
-                    `Property: ${property} is not part of class ${this.constructor.name}`
+                    `Property: ${property} is not part of class ${this.constructor.name}`,
                 );
         }
     }
