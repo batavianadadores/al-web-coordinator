@@ -28,7 +28,7 @@ const {
  * @property {boolean} [allowInscription] - AllowInscription, default true
  * @property {boolean} [allowSms]         - Allow SMS, default true. A flag that indicates if student allows marketing communication by SMS
  * @property {boolean} [allowEmail]       - Allow Email, default true. A flag that indicates if student allows marketing communication by e-mail
- * @property {Student.Level} [level]      - Level
+ * @property {number} [level]            - Level
  * @property {string} [licensePlate]      - License plate
  */
 
@@ -119,7 +119,7 @@ class StudentUpdateParamsDtoModel {
 
     /**
      * Level
-     * @type {Student.Level|undefined}
+     * @type {number|undefined}
      */
     level;
 
@@ -182,7 +182,7 @@ class StudentUpdateParamsDtoModel {
                     "id del alumno",
                     {
                         min: 1,
-                    }
+                    },
                 );
                 break;
             case "names":
@@ -193,7 +193,7 @@ class StudentUpdateParamsDtoModel {
                         "nombre del alumno",
                         {
                             min: 1,
-                        }
+                        },
                     );
                 }
                 break;
@@ -205,7 +205,7 @@ class StudentUpdateParamsDtoModel {
                         "apellido paterno del alumno",
                         {
                             min: 1,
-                        }
+                        },
                     );
                 }
                 break;
@@ -217,7 +217,7 @@ class StudentUpdateParamsDtoModel {
                         "apellido materno del alumno",
                         {
                             min: 1,
-                        }
+                        },
                     );
                 }
                 break;
@@ -229,7 +229,7 @@ class StudentUpdateParamsDtoModel {
                         "idType",
                         "tipo de documento del alumno",
                         "Student.IdTypes.all",
-                        "Tipos de documento"
+                        "Tipos de documento",
                     );
                 }
                 break;
@@ -242,7 +242,7 @@ class StudentUpdateParamsDtoModel {
                     if (isUndefinedOrNull(idType)) {
                         throw ValidationError.UndefinedOrNullValue(
                             "idType",
-                            "tipo de documento del alumno"
+                            "tipo de documento del alumno",
                         );
                     }
 
@@ -253,7 +253,7 @@ class StudentUpdateParamsDtoModel {
                         {
                             regex: idType.validator,
                             regexExplanation: idType.validatorExplanation,
-                        }
+                        },
                     );
                 }
                 break;
@@ -265,7 +265,7 @@ class StudentUpdateParamsDtoModel {
                         "fecha de nacimiento del alumno",
                         {
                             optional: true,
-                        }
+                        },
                     );
                 }
                 break;
@@ -278,7 +278,7 @@ class StudentUpdateParamsDtoModel {
                         {
                             optional: true,
                             max: 30,
-                        }
+                        },
                     );
                 }
                 break;
@@ -291,7 +291,7 @@ class StudentUpdateParamsDtoModel {
                         {
                             optional: true,
                             max: 30,
-                        }
+                        },
                     );
                 }
                 break;
@@ -303,7 +303,7 @@ class StudentUpdateParamsDtoModel {
                         "correo electrónico del alumno",
                         {
                             min: 1,
-                        }
+                        },
                     );
                     if (!isEmail(this.email)) {
                         const message = "Email is not valid";
@@ -321,7 +321,7 @@ class StudentUpdateParamsDtoModel {
                         "comentario del alumno",
                         {
                             optional: true,
-                        }
+                        },
                     );
                 }
                 break;
@@ -330,7 +330,7 @@ class StudentUpdateParamsDtoModel {
                     this.allowInscription = validateBoolean(
                         this.allowInscription,
                         "allowInscription",
-                        "permiso de inscripción del alumno"
+                        "permiso de inscripción del alumno",
                     );
                 }
                 break;
@@ -339,7 +339,7 @@ class StudentUpdateParamsDtoModel {
                     this.allowSms = validateBoolean(
                         this.allowSms,
                         "allowSms",
-                        "permiso de mensajes de texto"
+                        "permiso de mensajes de texto",
                     );
                 }
                 break;
@@ -348,22 +348,20 @@ class StudentUpdateParamsDtoModel {
                     this.allowEmail = validateBoolean(
                         this.allowEmail,
                         "allowEmail",
-                        "permiso de correo electrónico"
+                        "permiso de correo electrónico",
                     );
                 }
                 break;
             case "level":
                 if (!isUndefined(this.level)) {
-                    this.level = validateConstant(
+                    this.level = validateInteger(
                         this.level,
-                        Student.LevelFields.all,
                         "level",
                         "el nivel del alumno",
-                        "Student.LevelFields.all",
-                        "Niveles",
                         {
                             optional: true,
-                        }
+                            min: 1,
+                        },
                     );
                 }
                 break;
@@ -379,13 +377,13 @@ class StudentUpdateParamsDtoModel {
                             regex: /^[a-zA-Z0-9]{1,6}$/,
                             regexExplanation:
                                 "La placa debe contener solo letras mayúsculas y números, y tener una longitud máxima de 6 caracteres.",
-                        }
+                        },
                     );
                 }
                 break;
             default:
                 throw new Error(
-                    `Property: ${property} is not part of class ${this.constructor.name}`
+                    `Property: ${property} is not part of class ${this.constructor.name}`,
                 );
         }
     }
