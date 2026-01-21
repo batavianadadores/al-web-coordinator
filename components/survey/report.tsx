@@ -1,6 +1,7 @@
 import { Table } from "antd";
 import Decimal from "decimal.js";
 import { DateTime } from "luxon";
+import { ColumnType } from "antd/lib/table";
 import React, { useEffect, useState } from "react";
 
 import { isUndefinedOrNull } from "entities/validators";
@@ -8,9 +9,9 @@ import useCognitoSession from "@hooks/useCognitoSession";
 import { ReportFilterSelectedValues } from "./filter-report";
 import { useLazyGetReportQuery } from "@features/survey/survey-api.slice";
 import { wrapTryCatchOverAPICallWithReturn } from "@components/utils/component.util";
+
 import { SurveyGetReportResults } from "entities/survey/survey/survey-get-report-response.dto";
-import { ColumnType } from "antd/lib/table";
-import { LevelFields } from "entities/student/student";
+import { useStudentLevels } from "@hooks/useStudentLevels";
 
 type SurveyReportProps = {
     selectedValues: ReportFilterSelectedValues;
@@ -30,6 +31,8 @@ const SurveyReport: React.FC<SurveyReportProps> = ({ selectedValues }) => {
     const [columns, setColums] = useState<ColumnType<TableValue>[]>([]);
     const [data, setData] = useState<TableValue[]>([]);
     const [scroll, setScroll] = useState<{ x: string }>({ x: "100vw" });
+    const { studentLevels } = useStudentLevels();
+
     //#endregion
 
     //#region Effects
@@ -189,9 +192,11 @@ const SurveyReport: React.FC<SurveyReportProps> = ({ selectedValues }) => {
                             </div>
                         );
                     }
+
                     const levels = value.level.map(
-                        (e: keyof typeof LevelFields) =>
-                            (LevelFields[e] as any).description
+                        (e: number) =>
+                            studentLevels?.find((l) => l.levelId === e)?.name ||
+                            ""
                     );
                     return (
                         <div
@@ -235,7 +240,7 @@ const SurveyReport: React.FC<SurveyReportProps> = ({ selectedValues }) => {
         setScroll({ x: `${columns.length * 85}px` });
         setColums(columns);
         setData(rows);
-    }, [getReportResult]);
+    }, [getReportResult, studentLevels]); // eslint-disable-line react-hooks/exhaustive-deps
     //#endregion
 
     //#region API calls

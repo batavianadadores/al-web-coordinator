@@ -1,14 +1,13 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
-import { RootState } from "@app/store";
-import { isUndefined } from "@entities/validators";
-import Product from "./product";
-import { Pagination } from "@entities/common/pagination";
+import { RootState } from "app/store";
+import { isUndefined } from "entities/validators";
 import { transformErrorResponse } from "@features/api.util";
-import { ProductListParamsDto } from "@entities/moods/product/product-list-params.dto";
+import { StudentLevelListResponse } from "./student-level-list-response";
+import { StudentLevelListParamsDto } from "entities/student/core/student-levels-list-params.dto";
 
-export const apiMoodsProductsSlice = createApi({
-    reducerPath: "api/moods/products",
+export const apiStudentLevelSlice = createApi({
+    reducerPath: "api/student/core/student-level",
     baseQuery: fetchBaseQuery({
         baseUrl: process.env.NEXT_PUBLIC_API_URL_BASE,
         prepareHeaders(headers, { getState }) {
@@ -22,9 +21,9 @@ export const apiMoodsProductsSlice = createApi({
     }),
     endpoints(builder) {
         return {
-            listMoodsProducts: builder.query<
-                Pagination<Product>,
-                ProductListParamsDto
+            studentLevelList: builder.query<
+                StudentLevelListResponse,
+                StudentLevelListParamsDto
             >({
                 query(queryParams) {
                     const params: Record<string, any> = {};
@@ -35,14 +34,16 @@ export const apiMoodsProductsSlice = createApi({
                         }
                     }
                     return {
-                        url: `/moods/product`,
+                        url: `/student/core/studentLevel`,
                         params,
                     };
                 },
+                keepUnusedDataFor: 12 * 60 * 60, // 12 hours
                 transformErrorResponse,
             }),
         };
     },
 });
 
-export const { useLazyListMoodsProductsQuery } = apiMoodsProductsSlice;
+export const { useLazyStudentLevelListQuery, useStudentLevelListQuery } =
+    apiStudentLevelSlice;

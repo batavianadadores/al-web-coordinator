@@ -1,6 +1,5 @@
 import { DateTime } from "luxon";
 
-import { Level } from "../student/student";
 import { State } from "./student-schedule";
 import BaseModel from "@lib/common/base.model";
 
@@ -17,7 +16,7 @@ export class StudentScheduleModel extends BaseModel {
     attendanceBy?: string;
     isSmallPool?: boolean;
     courseId?: number;
-    level?: Level;
+    level?: number;
 
     clone() {
         const clone = new StudentScheduleModel();
