@@ -123,6 +123,10 @@ const AlAuth: React.FC<AlAuthProps> = ({ children, auth }) => {
         context.user,
     ]);
 
+    if (route === "idle") {
+        return <></>;
+    }
+
     if (route === "signIn") {
         if (typeof window !== "undefined") {
             window.localStorage.clear();

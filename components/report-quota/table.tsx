@@ -5,11 +5,13 @@ import React, { useState, useEffect } from "react";
 import { ReloadOutlined } from "@ant-design/icons";
 
 import style from "./table.module.css";
-import { LevelFields } from "@lib/student/student";
-import { LevelModel } from "@lib/student/level.model";
+import { PERSONALIZED_LEVEL } from "./constans";
 import { PoolModel } from "@lib/pool/model/pool.model";
 import useCognitoSession from "@hooks/useCognitoSession";
+import { useStudentLevels } from "@hooks/useStudentLevels";
 import { executeDataAsync } from "@components/utils/component.util";
+import { CapacityTypes, CapacityTypeDescription } from "@lib/course/course";
+import { StudentLevel } from "@features/student/core/student-level-list-response";
 import { StudentScheduleModel } from "@lib/student-schedule/student-schedule.model";
 import { StudentScheduleController } from "@lib/student-schedule/student-schedule.controller";
 
@@ -19,8 +21,6 @@ import {
     HourTableValue,
     TableValues,
 } from "./table.entities";
-import { CapacityTypes, CapacityTypeDescription } from "@lib/course/course";
-import { PERSONALIZED_LEVEL } from "./constans";
 
 const { Title, Text } = Typography;
 
@@ -30,7 +30,7 @@ type AlScheduleCapacityTableProps = {
         from: string;
         to: string;
     };
-    levelsFilter: LevelModel[];
+    levelsFilter: StudentLevel[];
 };
 
 const AlScheduleCapacityTable: React.FC<AlScheduleCapacityTableProps> = ({
@@ -48,19 +48,17 @@ const AlScheduleCapacityTable: React.FC<AlScheduleCapacityTableProps> = ({
     const [studentSchedules, setStudentSchedules] = useState<
         StudentScheduleModel[]
     >([]);
-    const [levels, setLevels] = useState<LevelModel[]>([]);
+    const [levels, setLevels] = useState<StudentLevel[]>([]);
+    const { studentLevels } = useStudentLevels();
 
     /// Events
     useEffect(() => {
         (async () => {
-            const levels = LevelFields.all.map((e) => ({
-                level: (LevelFields as any)[e]["value"],
-                description: (LevelFields as any)[e]["description"],
-            }));
+            const levels = [...studentLevels];
             levels.push(PERSONALIZED_LEVEL);
             setLevels(levels);
         })();
-    }, []);
+    }, [studentLevels]);
 
     useEffect(() => {
         if (filter) {
@@ -165,9 +163,9 @@ const AlScheduleCapacityTable: React.FC<AlScheduleCapacityTableProps> = ({
 
         const quotas: { cellValueItem: CellValueItem[]; total: number }[] = [];
         if (levelsFilter && levelsFilter.length > 0) {
-            const levelIds = levelsFilter.map((e) => e.level);
+            const levelIds = levelsFilter.map((e) => e.levelId);
             const items = _value.filter((e) =>
-                levelIds.includes(e.level.level)
+                levelIds.includes(e.level.levelId)
             );
             const total = items.reduce(
                 (pre, cuv, cui) => pre + cuv.ss.length,
@@ -192,10 +190,11 @@ const AlScheduleCapacityTable: React.FC<AlScheduleCapacityTableProps> = ({
                     <div key={i} className={style["cell"]}>
                         {e.cellValueItem.map((e) => (
                             <div
-                                key={e.level.level}
+                                key={e.level.levelId}
                                 style={{
                                     background: legend.find(
-                                        (l) => l.level.level === e.level.level
+                                        (l) =>
+                                            l.level.levelId === e.level.levelId
                                     )?.color,
                                     width: "20%",
                                     textAlign: "center",
@@ -254,7 +253,7 @@ const AlScheduleCapacityTable: React.FC<AlScheduleCapacityTableProps> = ({
 
     /// Data source
     const [legend, setLegend] = useState<
-        { level: LevelModel; color: string }[]
+        { level: StudentLevel; color: string }[]
     >([]);
     const [dataSource, setDataSource] = useState<TableValues[]>([]);
     useEffect(() => {
@@ -372,12 +371,12 @@ const AlScheduleCapacityTable: React.FC<AlScheduleCapacityTableProps> = ({
     const fillItem = (
         day: CellValueItem[],
         ss: StudentScheduleModel,
-        levelsObject: { [key: string]: LevelModel }
+        levelsObject: { [key: string]: StudentLevel }
     ) => {
-        if (ss.courseId?.toString() === PERSONALIZED_LEVEL.level) {
-            ss.level = PERSONALIZED_LEVEL.level as any;
+        if (ss.courseId === PERSONALIZED_LEVEL.levelId) {
+            ss.level = PERSONALIZED_LEVEL.levelId as any;
         }
-        const item = day.find((e) => e.level.level === ss.level);
+        const item = day.find((e) => e.level.levelId === ss.level);
         if (item) {
             item.ss.push(ss);
         } else {
@@ -389,15 +388,15 @@ const AlScheduleCapacityTable: React.FC<AlScheduleCapacityTableProps> = ({
     };
 
     const sortCell = (cell: CellValueItem[]) => {
-        cell.sort((a, b) => a.level.level.localeCompare(b.level.level));
+        cell.sort((a, b) => (a.level.levelId > b.level.levelId ? 1 : -1));
     };
 
     const transformArrayToObjectLevels = (
-        levels: LevelModel[]
-    ): { [key: string]: LevelModel } => {
-        const response: { [key: string]: LevelModel } = {};
+        levels: StudentLevel[]
+    ): { [key: string]: StudentLevel } => {
+        const response: { [key: string]: StudentLevel } = {};
         for (const level of levels) {
-            response[level.level] = level;
+            response[level.levelId] = level;
         }
         return response;
     };
@@ -443,7 +442,7 @@ const AlScheduleCapacityTable: React.FC<AlScheduleCapacityTableProps> = ({
                                 marginRight: "2px",
                             }}
                         ></div>
-                        <Text>{e.level.description}</Text>
+                        <Text>{e.level.name}</Text>
                     </div>
                 ))}
             </div>

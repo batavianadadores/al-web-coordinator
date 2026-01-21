@@ -61,7 +61,7 @@ const _IdTypes = Object.freeze({
 
 /**
  * @typedef SearchField
- * @type {('name'|'lastname'|'fullname'|'endDate'|'email'|'idNumber'|'billId'|'studentIds')}
+ * @type {('name'|'lastname'|'fullname'|'endDate'|'email'|'idNumber'|'billId'|'studentIds'|'licensePlate')}
  */
 
 const _SearchFields = Object.freeze({
@@ -74,6 +74,7 @@ const _SearchFields = Object.freeze({
         "idNumber",
         "billId",
         "studentIds",
+        "licensePlate",
     ],
     name: {
         description: "Nombre",
@@ -132,59 +133,15 @@ const _SearchFields = Object.freeze({
             validateCommaSeparatedIntegers(value, key, userKey);
         },
     },
-});
-
-/**
- * @typedef Level
- * @type {('no_level'|'mom_baby'|'toddler_pool'|'beginner1'|'beginner2'|'beginner3'|'intermeditate'|'advanced'|'adults')}
- */
-const _LevelFields = Object.freeze({
-    all: [
-        "no_level",
-        "mom_baby",
-        "toddler_pool",
-        "beginner1",
-        "beginner2",
-        "beginner3",
-        "intermeditate",
-        "advanced",
-        "adults",
-    ],
-    no_level: {
-        description: "Sin nivel",
-        value: "no_level",
-    },
-    mom_baby: {
-        description: "Mamá bebé",
-        value: "mom_baby",
-    },
-    toddler_pool: {
-        description: "Patera",
-        value: "toddler_pool",
-    },
-    beginner1: {
-        description: "Burbujas",
-        value: "beginner1",
-    },
-    beginner2: {
-        description: "Flecha",
-        value: "beginner2",
-    },
-    beginner3: {
-        description: "Pateo",
-        value: "beginner3",
-    },
-    intermeditate: {
-        description: "Braceo circular",
-        value: "intermeditate",
-    },
-    advanced: {
-        description: "Estilos",
-        value: "advanced",
-    },
-    adults: {
-        description: "Adultos",
-        value: "adults",
+    licensePlate: {
+        description: "Placa del vehículo",
+        validation: (value, key, userKey) =>
+            validateString(value, key, userKey, {
+                max: 6,
+                regex: /^[a-zA-Z0-9]{1,6}$/,
+                regexExplanation:
+                    "La placa debe contener solo letras mayúsculas y números, y tener una longitud máxima de 6 caracteres.",
+            }),
     },
 });
 
@@ -216,8 +173,10 @@ const _LevelFields = Object.freeze({
  * @property {boolean} cognitoPassword  - Cognito Password, default false. A flag that indicates if user data or password should be updated.
  * @property {boolean} isClub           - Is Club, default false. A flag that indicates if student is a club member
  * @property {number} courseId          - Course Id, min 1
- * @property {Level} level              - Level
+ * @property {number} level              - Level
+ * @property {string} levelName         - Level Name
  * @property {boolean} isAdult          - Is Adult
+ * @property {string} licensePlate      - License Plate, max 6 characters
  */
 
 class StudentModel {
@@ -403,5 +362,4 @@ module.exports = {
     StudentModel,
     IdTypes: _IdTypes,
     SearchFields: _SearchFields,
-    LevelFields: _LevelFields,
 };

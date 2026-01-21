@@ -2,11 +2,11 @@ import React, { useState } from "react";
 import { Layout, Typography } from "antd";
 
 import styles from "./quota.module.css";
-import { LevelModel } from "@lib/student/level.model";
 import { PoolModel } from "@lib/pool/model/pool.model";
 import { ComponentWithAuth } from "@components/auth/utils";
 import AlScheduleCapacityTable from "@components/report-quota/table";
 import AlScheduleCapacityFilter from "@components/report-quota/filter";
+import { StudentLevel } from "@features/student/core/student-level-list-response";
 
 const { Content } = Layout;
 const { Title } = Typography;
@@ -20,7 +20,7 @@ const AlScheduleQuota: ComponentWithAuth<AlScheduleQuotaProps> = (props) => {
         to: string;
     }>();
 
-    const [levelsFilter, setLevelsFilter] = useState<LevelModel[]>([]);
+    const [levelsFilter, setLevelsFilter] = useState<StudentLevel[]>([]);
 
     const handleOnFilterChange = (
         pool: PoolModel,
@@ -30,7 +30,7 @@ const AlScheduleQuota: ComponentWithAuth<AlScheduleQuotaProps> = (props) => {
         setFilter({ pool, from, to });
     };
 
-    const handleOnLevelsFilterChange = (levels: LevelModel[]) => {
+    const handleOnLevelsFilterChange = (levels: StudentLevel[]) => {
         setLevelsFilter(levels);
     };
 

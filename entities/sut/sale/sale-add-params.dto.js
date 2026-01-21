@@ -15,6 +15,7 @@ const Sale = require("./sale");
  * @property {Sale.SaleItem[]} items        - Sale items
  * @property {Sale.SaleInvoiceData} invoiceData  - Sale invoice data
  * @property {Sale.InvoiceType} invoiceType  - Sale invoice type
+ * @property {number} poolId - Pool Id
  */
 
 class SaleAddParamsDtoModel {
@@ -35,6 +36,12 @@ class SaleAddParamsDtoModel {
      * @type {Sale.InvoiceType}
      */
     invoiceType;
+
+    /**
+     * PoolId
+     * @type {number}
+     */
+    poolId;
 
     /**
      * Creates model
@@ -73,14 +80,9 @@ class SaleAddParamsDtoModel {
                 );
 
                 for (const item of this.items) {
-                    validateInteger(
-                        item.productId,
-                        "productId",
-                        "id del producto",
-                        {
-                            min: 1,
-                        }
-                    );
+                    validateInteger(item.stockId, "stockId", "id del stock", {
+                        min: 1,
+                    });
                     validateInteger(
                         item.quantity,
                         "quantity",
@@ -145,6 +147,16 @@ class SaleAddParamsDtoModel {
                     "tipo de comprobante",
                     "B: Boleta, F: Factura",
                     "B: Boleta, F: Factura"
+                );
+                break;
+            case "poolId":
+                this.poolId = validateInteger(
+                    this.poolId,
+                    "poolId",
+                    "id de la piscina",
+                    {
+                        min: 0,
+                    }
                 );
                 break;
             default:

@@ -14,9 +14,16 @@ const Survey = require("./survey");
  */
 
 /**
+ * @typedef {Object} SurveyTotal
+ * @property {number} poolId - Survey pool id
+ * @property {number} total - Total
+ */
+
+/**
  * @typedef {Object} SurveyResults
  * @property {SurveyResult[]} results - Results
  * @property {Survey.Survey} survey - Survey
+ * @property {SurveyTotal[]} totals - Totals
  */
 
 module.exports = {};
