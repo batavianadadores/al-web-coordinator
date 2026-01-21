@@ -20,7 +20,6 @@ const {
 class OperationNumberAddParamsDtoModel {
     /**
      * Payment type
-     * @type {string}
      * @type {SalePayment.Type}
      */
     paymentType;
@@ -76,7 +75,7 @@ class OperationNumberAddParamsDtoModel {
                     "paymentType",
                     "Tipo de pago",
                     "SalePayment.Type",
-                    "Tipos de pago"
+                    "Tipos de pago",
                 );
                 break;
             case "amount":
@@ -90,7 +89,7 @@ class OperationNumberAddParamsDtoModel {
                     {
                         min: 1,
                         optional: false,
-                    }
+                    },
                 );
                 break;
             case "operationNumberStatusId":
@@ -100,12 +99,12 @@ class OperationNumberAddParamsDtoModel {
                     "nuevo id de estado",
                     {
                         min: 1,
-                    }
+                    },
                 );
                 break;
             default:
                 throw new Error(
-                    `Property: ${property} is not part of class ${this.constructor.name}`
+                    `Property: ${property} is not part of class ${this.constructor.name}`,
                 );
         }
     }
